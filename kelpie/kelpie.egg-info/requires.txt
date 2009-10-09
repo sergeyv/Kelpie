@@ -1,0 +1,6 @@
+repoze.bfg
+SQLAlchemy
+FormAlchemy
+transaction
+repoze.tm2
+zope.sqlalchemy

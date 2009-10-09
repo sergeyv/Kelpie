@@ -1,0 +1,40 @@
+<configure xmlns="http://namespaces.repoze.org/bfg">
+
+  <!-- this must be included for the view declarations to work -->
+  <include package="repoze.bfg.includes" />
+
+  <subscriber for="repoze.bfg.interfaces.INewRequest"
+    handler=".run.handle_teardown"/>
+
+
+  <route
+    path="/static/*subpath"
+    name="static"
+    view=".views.static.view"
+    />
+
+  <route
+    path="/zopes/"
+    name="list-zope-instances"
+    view=".views.zope_instances.list_all"
+    />
+    
+  <route
+    path="/zopes/:item_id"
+    name="view-zope-instance"
+    view=".views.zope_instances.view"
+    />
+
+  <route
+    path="/zopes/:item_id/edit"
+    name="edit-zope-instance"
+    view=".views.zope_instances.edit"
+    />
+
+  <route
+    path="/zopes/add"
+    name="add-zope-instance"
+    view=".views.zope_instances.add"
+    />
+     
+</configure>
