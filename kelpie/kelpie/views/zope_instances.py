@@ -14,7 +14,7 @@ def list_all(request):
                  )
                                        
 def view(request):
-    id = request.matchdict['instance']
+    id = request.matchdict['item_id']
     dbsession = DBSession()
     instance = dbsession.query(ZopeInstance).filter(ZopeInstance.id==id).one()
     return render('templates/zope_instances/view.pt',
@@ -23,7 +23,7 @@ def view(request):
                   )
 
 def edit(request):
-    id = request.matchdict['instance']
+    id = request.matchdict['item_id']
     dbsession = DBSession()
     instance = dbsession.query(ZopeInstance).filter(ZopeInstance.id==id).one()
     fs = FieldSet(instance)

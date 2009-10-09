@@ -5,11 +5,13 @@ from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import Text
 from sqlalchemy import String
+from sqlalchemy import ForeignKey
 
 from sqlalchemy.exc import IntegrityError
 
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import relation
 
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -33,7 +35,7 @@ class ZopeInstance(Base):
     url = Column(String(255))
     server_id = Column(Integer, ForeignKey('servers.id'))
     buildout_instances = relation('BuildoutInstance', backref='zope_instance')
-    products = relation('ZopeProducts', backref='zope_instance')
+    products = relation('ZopeProduct', backref='zope_instance')
 
     def __init__(self, name, url):
        self.name = name
@@ -48,7 +50,7 @@ class BuildoutInstance(Base):
 
     
 class ZopeProduct(Base):
-	__tablename__ = 'zope_products'
+    __tablename__ = 'zope_products'
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
     version = Column(String(20))
