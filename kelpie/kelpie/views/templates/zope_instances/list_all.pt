@@ -14,12 +14,19 @@
 <body>
 
 <div class="main_content">
-<ul>
-<tal:loop repeat="instance instances">
-<li><a href="${request.application_url}/zopes/${instance.id}" tal:content="instance.name" /></li>
-</tal:loop>
-</ul>
 
+<h1>Zope instances</h1>
+
+<table>
+<tr tal:repeat="instance instances">
+<td><a href="${request.application_url}/zopes/${instance.id}" tal:content="instance.name" /></td>
+<td>${instance.url}</td>
+<td><a href="${request.application_url}/zopes/${instance.id}/edit">Edit</a></td>
+<td><a href="${request.application_url}/zopes/${instance.id}/delete">Delete</a></td>
+</tr>
+</table>
+
+<p><a href="add">[Add]</a></p>
 You can return to the <a href="${request.application_url}">FrontPage</a>.
 </div>
 

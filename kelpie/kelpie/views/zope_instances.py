@@ -1,4 +1,5 @@
 from repoze.bfg.chameleon_zpt import render_template_to_response as render
+from webob.exc import HTTPFound
 
 from formalchemy import FieldSet
 
@@ -35,9 +36,29 @@ def edit(request):
 
 def add(request):
     dbsession = DBSession()
-    fs = FieldSet(ZopeInstance)
+    instance =  ZopeInstance()
+    fs = FieldSet(instance, session=dbsession)
     return render('templates/zope_instances/add.pt',
+                  instance = instance,
                   form = fs.render(),
                   request = request,
                  )
 
+def save(request):
+    id = request.matchdict.get('item_id', None)
+    dbsession = DBSession()
+    if id:
+        instance = dbsession.query(ZopeInstance).filter(ZopeInstance.id==id).one()
+    else:
+        instance = ZopeInstance()
+    fs = FieldSet(instance)
+    fs.rebind(instance, data=request.params)
+    if fs.validate(): fs.sync()
+    if not id:
+        dbsession.add(instance)
+    #instance.save()
+    success_url = request.path_url.rpartition('/')[0]+ '/'
+    failure_url = request.path_url.rpartition('/')[0] + '/edit'
+    return HTTPFound(location=success_url)
+
+    

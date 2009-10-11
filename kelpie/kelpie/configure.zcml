@@ -6,6 +6,11 @@
   <subscriber for="repoze.bfg.interfaces.INewRequest"
     handler=".run.handle_teardown"/>
 
+  <route
+    path="/"
+    name="home"
+    view=".views.home.index"
+    />
 
   <route
     path="/static/*subpath"
@@ -17,6 +22,18 @@
     path="/zopes/"
     name="list-zope-instances"
     view=".views.zope_instances.list_all"
+    />
+
+  <route
+    path="/zopes/add"
+    name="add-zope-instance"
+    view=".views.zope_instances.add"
+    />
+
+  <route
+    path="/zopes/save"
+    name="save-new-zope-instance"
+    view=".views.zope_instances.save"
     />
     
   <route
@@ -32,9 +49,10 @@
     />
 
   <route
-    path="/zopes/add"
-    name="add-zope-instance"
-    view=".views.zope_instances.add"
+    path="/zopes/:item_id/save"
+    name="save-zope-instance"
+    view=".views.zope_instances.save"
     />
+
      
 </configure>

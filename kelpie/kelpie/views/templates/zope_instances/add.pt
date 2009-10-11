@@ -14,12 +14,16 @@
 <body>
 
 <div class="main_content">
-<ul>
-<li><a href="${request.application_url}/zopes/${instance.id}" tal:content="instance.name" /></li>
 
-</ul>
+<h1>Add Zope Instance</h1>
 
-<a href="${request.application_url}/zopes/">Up one level</a>.
+<form method="post" action="save">
+<tal:from replace="structure form" />
+
+<input type="submit" name="form.button.submit" value="Save" />
+<input type="submit" name="form.button.cancel" value="Cancel" />
+</form>
+
 </div>
 
 </body>

@@ -37,9 +37,6 @@ class ZopeInstance(Base):
     buildout_instances = relation('BuildoutInstance', backref='zope_instance')
     products = relation('ZopeProduct', backref='zope_instance')
 
-    def __init__(self, name, url):
-       self.name = name
-       self.url = url
 
 class BuildoutInstance(Base):
     __tablename__ = 'buildout_instances'
@@ -71,7 +68,9 @@ def initialize_sql(db, echo=False):
     Base.metadata.create_all(engine)
     try:
         session = DBSession()
-        instance = ZopeInstance('A zope instance', 'http://localhost:8080/')
+        instance = ZopeInstance()
+        instance.name = 'A zope instance'
+        instance.url = 'http://localhost:8080/'
         session.add(instance)
         transaction.commit()
     except IntegrityError:

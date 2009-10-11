@@ -15,9 +15,16 @@
 
 <div class="main_content">
 
+<h1>Edit Zope Instance</h1>
+
+<form method="post" action="save">
 <tal:from replace="structure form" />
 
-<a href="${request.application_url}/zopes/">Up one level</a>.
+<input type="submit" name="form.button.submit" value="Save" />
+<input type="submit" name="form.button.cancel" value="Cancel" />
+</form>
+
+
 </div>
 
 </body>
