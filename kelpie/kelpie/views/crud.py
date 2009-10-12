@@ -6,27 +6,27 @@ from formalchemy import FieldSet
 from kelpie.models import DBSession
 from kelpie.models import ZopeInstance
 
-def list_all(request):
+def index(request,cls,template_name):
     dbsession = DBSession()
-    instances = dbsession.query(ZopeInstance).all()
-    return render('templates/zope_instances/list_all.pt',
+    instances = dbsession.query(cls).all()
+    return render(template_name,
                   instances = instances,
                   request = request,
                  )
                                        
-def view(request):
+def view(request,cls,template_name):
     id = request.matchdict['item_id']
     dbsession = DBSession()
-    instance = dbsession.query(ZopeInstance).filter(ZopeInstance.id==id).one()
-    return render('templates/zope_instances/view.pt',
+    instance = dbsession.query(cls).filter(cls.id==id).one()
+    return render(template_name,
                    instance = instance,
                    request = request,
                   )
 
-def edit(request):
+def edit(request, cls):
     id = request.matchdict['item_id']
     dbsession = DBSession()
-    instance = dbsession.query(ZopeInstance).filter(ZopeInstance.id==id).one()
+    instance = dbsession.query(cls).filter(cls.id==id).one()
     fs = FieldSet(instance)
     return render('templates/zope_instances/edit.pt',
                   instance = instance,
@@ -34,9 +34,9 @@ def edit(request):
                   request = request,
                  )
 
-def add(request):
+def add(request,cls):
     dbsession = DBSession()
-    instance =  ZopeInstance()
+    instance =  cls()
     fs = FieldSet(instance, session=dbsession)
     return render('templates/zope_instances/add.pt',
                   instance = instance,
@@ -44,16 +44,15 @@ def add(request):
                   request = request,
                  )
 
-def save(request):
-    success_url = '/zopes/'
+def save(request,cls,success_url):
     if 'form.button.cancel' in request.params:
         return HTTPFound(location=success_url)
     id = request.matchdict.get('item_id', None)
     dbsession = DBSession()
     if id:
-        instance = dbsession.query(ZopeInstance).filter(ZopeInstance.id==id).one()
+        instance = dbsession.query(cls).filter(cls.id==id).one()
     else:
-        instance = ZopeInstance()
+        instance = cls()
     fs = FieldSet(instance)
     fs.rebind(instance, data=request.params)
     if fs.validate(): fs.sync()
@@ -65,14 +64,14 @@ def save(request):
     return HTTPFound(location=success_url)
 
     
-def delete(request):
-    success_url = '/zopes/'
+def delete(request, cls, success_url):
+
     if 'form.button.cancel' in request.params:
         return HTTPFound(location=success_url)
         
     id = request.matchdict.get('item_id', None)
     dbsession = DBSession()
-    instance = dbsession.query(ZopeInstance).filter(ZopeInstance.id==id).one()
+    instance = dbsession.query(cls).filter(cls.id==id).one()
     if 'form.button.confirm_delete' in request.params:
         dbsession.delete(instance)
         #instance.save()
