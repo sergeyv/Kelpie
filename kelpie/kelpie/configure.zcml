@@ -54,5 +54,11 @@
     view=".views.zope_instances.save"
     />
 
+  <route
+    path="/zopes/:item_id/delete"
+    name="delete-zope-instance"
+    view=".views.zope_instances.delete"
+    />
+
      
 </configure>

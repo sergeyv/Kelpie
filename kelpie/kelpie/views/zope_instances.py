@@ -62,3 +62,18 @@ def save(request):
     return HTTPFound(location=success_url)
 
     
+def delete(request):
+    if 'form.button.confirm_delete' in request.params:
+        id = request.matchdict.get('item_id', None)
+        dbsession = DBSession()
+        instance = dbsession.query(ZopeInstance).filter(ZopeInstance.id==id).one()
+        dbsession.delete(instance)
+        #instance.save()
+        success_url = '/zopes/'
+        return HTTPFound(location=success_url)
+
+    return render('templates/zope_instances/delete.pt',
+                  instance = instance,
+                  request = request,
+                 )
+
