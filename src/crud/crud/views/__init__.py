@@ -3,53 +3,44 @@ from webob.exc import HTTPFound
 
 from formalchemy import FieldSet
 
-from kelpie.models import DBSession
+from crud.models import DBSession
 
 from crud import get_content_type
 
-def index(request):
-    slug = request.matchdict['content_type_slug']
-    cti = get_content_type(slug)
-    if cti is None:
-        raise NotFound
+def index(context,request):
     dbsession = DBSession()
-    instances = dbsession.query(cti['class']).all()
-    return render(template_name,
+    instances = dbsession.query(context.cls).all()
+    return render('templates/index.pt',
                   instances = instances,
                   request = request,
                  )
                                        
-def view(request,cls,template_name):
-    id = request.matchdict['item_id']
-    dbsession = DBSession()
-    instance = dbsession.query(cls).filter(cls.id==id).one()
-    return render(template_name,
-                   instance = instance,
+def view(context, request):
+    return render('templates/view.pt',
+                   instance = context,
                    request = request,
                   )
 
-def edit(request, cls):
-    id = request.matchdict['item_id']
-    dbsession = DBSession()
-    instance = dbsession.query(cls).filter(cls.id==id).one()
-    fs = FieldSet(instance)
-    return render('templates/zope_instances/edit.pt',
-                  instance = instance,
+def edit(context, request):
+    fs = FieldSet(context)
+    return render('templates/edit.pt',
+                  instance = context,
                   form = fs.render(),
                   request = request,
                  )
 
-def add(request,cls):
+def add(context, request):
     dbsession = DBSession()
-    instance =  cls()
+    instance =  context.cls()
     fs = FieldSet(instance, session=dbsession)
-    return render('templates/zope_instances/add.pt',
+    return render('templates/add.pt',
                   instance = instance,
                   form = fs.render(),
                   request = request,
                  )
 
-def save(request,cls,success_url):
+def save(context, request):
+    slug = request.matchdict['content_type_slug']
     if 'form.button.cancel' in request.params:
         return HTTPFound(location=success_url)
     id = request.matchdict.get('item_id', None)
@@ -69,8 +60,8 @@ def save(request,cls,success_url):
     return HTTPFound(location=success_url)
 
     
-def delete(request, cls, success_url):
-
+def delete(request):
+    slug = request.matchdict['content_type_slug']
     if 'form.button.cancel' in request.params:
         return HTTPFound(location=success_url)
         
@@ -82,7 +73,7 @@ def delete(request, cls, success_url):
         #instance.save()
         return HTTPFound(location=success_url)
 
-    return render('templates/zope_instances/delete.pt',
+    return render('templates/delete.pt',
                   instance = instance,
                   request = request,
                  )

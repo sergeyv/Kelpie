@@ -17,6 +17,8 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from zope.sqlalchemy import ZopeTransactionExtension
 
+import crud
+
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
@@ -27,6 +29,10 @@ class Server(Base):
     ssh_user = Column(String(25))
     zope_instances = relation('ZopeInstance', backref='server')
 
+crud.register(Server,
+    slug='servers',
+    )
+    
 class ZopeInstance(Base):
     """ The SQLAlchemy declarative model class for a Page object. """
     __tablename__ = 'zope_instances'
@@ -44,6 +50,10 @@ class BuildoutInstance(Base):
     zope_instance_id = Column(Integer, ForeignKey('zope_instances.id'))
     filesystem_path = Column(String(255))
     project_id = Column(Integer, ForeignKey('projects.id'))
+
+crud.register(BuildoutInstance,
+    slug='buildouts',
+    )
 
     
 class ZopeProduct(Base):
@@ -66,6 +76,9 @@ def initialize_sql(db, echo=False):
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
     Base.metadata.create_all(engine)
+    
+    from crud import crud_init
+    crud_init(DBSession)
     try:
         session = DBSession()
         instance = ZopeInstance()

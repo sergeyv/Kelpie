@@ -3,6 +3,8 @@
   <!-- this must be included for the view declarations to work -->
   <include package="repoze.bfg.includes" />
 
+  <include package="crud" />
+  
   <subscriber for="repoze.bfg.interfaces.INewRequest"
     handler=".run.handle_teardown"/>
 
@@ -58,52 +60,6 @@
     path="/zopes/:item_id/delete"
     name="delete-zope-instance"
     view=".views.zope_instances.delete"
-    />
-
-
-
-
-
-  <route
-    path="/:content_type_slug/"
-    name="crud-index"
-    view=".views.crud.index"
-    />
-
-  <route
-    path="/:content_type_slug/add"
-    name="crud-add"
-    view=".views.crud.add"
-    />
-
-  <route
-    path="/:content_type_slug/save"
-    name="crud-save-new"
-    view=".views.crud.save"
-    />
-    
-  <route
-    path="/:content_type_slug/:item_id"
-    name="crud-view"
-    view=".views.crud.view"
-    />
-
-  <route
-    path="/:content_type_slug/:item_id/edit"
-    name="crud-edit"
-    view=".views.crud.edit"
-    />
-
-  <route
-    path="/:content_type_slug/:item_id/save"
-    name="crud-save"
-    view=".views.crud.save"
-    />
-
-  <route
-    path="/:content-type-slug/:item_id/delete"
-    name="crud-delete"
-    view=".views.crud.delete"
     />
 
 </configure>
