@@ -1,0 +1,88 @@
+<configure xmlns="http://namespaces.repoze.org/bfg">
+
+<view
+    for=".models.ISection"
+    view=".views.index"
+/>
+
+<view
+    for=".models.ISection"
+    view=".views.add"
+    name="add"
+/>
+
+<view
+    for=".models.ISection"
+    view=".views.save"
+    name="save"
+/>
+
+<view
+    for=".models.IModel"
+    view=".views.view"
+/>
+
+<view
+    for=".models.IModel"
+    view=".views.edit"
+    name="edit"
+/>
+
+<view
+    for=".models.IModel"
+    view=".views.save"
+    name="save"
+/>
+
+<view
+    for=".models.IModel"
+    view=".views.delete"
+    name="delete"
+/>
+
+<!--
+  <route
+    path="/:content_type_slug/"
+    name="crud-index"
+    view=".views.index"
+    />
+
+  <route
+    path="/:content_type_slug/add"
+    name="crud-add"
+    view=".views.add"
+    />
+
+  <route
+    path="/:content_type_slug/save"
+    name="crud-save-new"
+    view=".views.save"
+    />
+    
+  <route
+    path="/:content_type_slug/:item_id"
+    name="crud-view"
+    view=".views.view"
+    />
+
+  <route
+    path="/:content_type_slug/:item_id/edit"
+    name="crud-edit"
+    view=".views.edit"
+    />
+
+  <route
+    path="/:content_type_slug/:item_id/save"
+    name="crud-save"
+    view=".views.save"
+    />
+
+  <route
+    path="/:content-type-slug/:item_id/delete"
+    name="crud-delete"
+    view=".views.delete"
+    />
+
+-->
+
+</configure>

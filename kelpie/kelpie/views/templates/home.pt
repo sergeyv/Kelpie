@@ -31,7 +31,7 @@
       </div>
       
     <ul>
-        <li><a href='/zopes/'>Zope Instances</a></li>
+        <li tal:repeat="item items"><a href="${item.slug}">${item.name}</a></li>
     </ul>
     </div>
     <!-- end content -->

@@ -3,6 +3,8 @@
   <!-- this must be included for the view declarations to work -->
   <include package="repoze.bfg.includes" />
 
+  <include package="crud" />
+  
   <subscriber for="repoze.bfg.interfaces.INewRequest"
     handler=".run.handle_teardown"/>
 
@@ -17,7 +19,7 @@
     name="static"
     view=".views.static.view"
     />
-
+<!--
   <route
     path="/zopes/"
     name="list-zope-instances"
@@ -54,5 +56,11 @@
     view=".views.zope_instances.save"
     />
 
-     
+  <route
+    path="/zopes/:item_id/delete"
+    name="delete-zope-instance"
+    view=".views.zope_instances.delete"
+    />
+-->
+
 </configure>

@@ -4,6 +4,8 @@ import kelpie
 from kelpie.models import DBSession
 from kelpie.models import initialize_sql
 
+from crud import get_root
+
 class Cleanup:
     def __init__(self, cleaner):
         self.cleaner = cleaner
@@ -22,6 +24,7 @@ def app(global_config, **kw):
     db_string = kw.get('db_string')
     if db_string is None:
         raise ValueError("No 'db_string' value in application configuration.")
+
     initialize_sql(db_string)
-    return make_app(None, kelpie, options=kw)
+    return make_app(get_root, kelpie, options=kw)
 

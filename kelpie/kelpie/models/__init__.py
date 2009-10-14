@@ -15,18 +15,36 @@ from sqlalchemy.orm import relation
 
 from sqlalchemy.ext.declarative import declarative_base
 
+from zope.interface import implements
+
 from zope.sqlalchemy import ZopeTransactionExtension
+
+from crud import IModel
+
+import crud
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
 class Server(Base):
+    implements(IModel)
     __tablename__ = 'servers'
     id = Column(Integer, primary_key = True)
+    name = Column(String(100), unique=True)
     ssh_url = Column(String(100))
     ssh_user = Column(String(25))
     zope_instances = relation('ZopeInstance', backref='server')
 
+    def __repr__(self):
+        return self.name
+
+crud.register(Server,
+    pretty_name = 'Server',
+    pretty_name_plural = 'Servers',
+    slug='servers',
+    listing_fields = ('name','ssh_url'),
+    )
+    
 class ZopeInstance(Base):
     """ The SQLAlchemy declarative model class for a Page object. """
     __tablename__ = 'zope_instances'
@@ -37,13 +55,31 @@ class ZopeInstance(Base):
     buildout_instances = relation('BuildoutInstance', backref='zope_instance')
     products = relation('ZopeProduct', backref='zope_instance')
 
+    def __repr__(self):
+        return self.name
+
+crud.register(ZopeInstance,
+    pretty_name = 'Zope Instance',
+    slug='zopes',
+    listing_fields = ('name','url'),
+    )
+
 
 class BuildoutInstance(Base):
     __tablename__ = 'buildout_instances'
     id = Column(Integer, primary_key=True)
+    name = Column(String(100), unique=True)
     zope_instance_id = Column(Integer, ForeignKey('zope_instances.id'))
     filesystem_path = Column(String(255))
     project_id = Column(Integer, ForeignKey('projects.id'))
+
+    def __repr__(self):
+        return self.name
+
+crud.register(BuildoutInstance,
+    pretty_name = 'Buildouts',
+    slug='buildouts',
+    )
 
     
 class ZopeProduct(Base):
@@ -53,6 +89,15 @@ class ZopeProduct(Base):
     version = Column(String(20))
     zope_instance_id = Column(Integer, ForeignKey('zope_instances.id')) 
 
+    def __repr__(self):
+        return "%s (%s)" % (self.name, self.version)
+
+crud.register(ZopeProduct,
+    pretty_name = 'Product',
+    slug='products',
+    listing_fields = ('name','url'),
+    )
+
 class Project(Base):
     __tablename__ = 'projects'
     id = Column(Integer, primary_key = True)
@@ -60,12 +105,21 @@ class Project(Base):
     vcs_url = Column(String(255))
     buildout_instances = relation('BuildoutInstance', backref='project')
 
+    def __repr__(self):
+        return self.name
+
+crud.register(Project,
+    slug='projects',
+    )
     
 def initialize_sql(db, echo=False):
     engine = create_engine(db, echo=echo)
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
     Base.metadata.create_all(engine)
+    
+    from crud import crud_init
+    crud_init(DBSession)
     try:
         session = DBSession()
         instance = ZopeInstance()
