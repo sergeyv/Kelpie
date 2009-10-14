@@ -45,9 +45,6 @@ def add(request):
                  )
 
 def save(request):
-    success_url = '/zopes/'
-    if 'form.button.cancel' in request.params:
-        return HTTPFound(location=success_url)
     id = request.matchdict.get('item_id', None)
     dbsession = DBSession()
     if id:
@@ -65,21 +62,3 @@ def save(request):
     return HTTPFound(location=success_url)
 
     
-def delete(request):
-    success_url = '/zopes/'
-    if 'form.button.cancel' in request.params:
-        return HTTPFound(location=success_url)
-        
-    id = request.matchdict.get('item_id', None)
-    dbsession = DBSession()
-    instance = dbsession.query(ZopeInstance).filter(ZopeInstance.id==id).one()
-    if 'form.button.confirm_delete' in request.params:
-        dbsession.delete(instance)
-        #instance.save()
-        return HTTPFound(location=success_url)
-
-    return render('templates/zope_instances/delete.pt',
-                  instance = instance,
-                  request = request,
-                 )
-

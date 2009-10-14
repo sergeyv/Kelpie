@@ -54,56 +54,5 @@
     view=".views.zope_instances.save"
     />
 
-  <route
-    path="/zopes/:item_id/delete"
-    name="delete-zope-instance"
-    view=".views.zope_instances.delete"
-    />
-
-
-
-
-
-  <route
-    path="/servers/"
-    name="list-zope-instances"
-    view=".views.zope_instances.list_all"
-    />
-
-  <route
-    path="/zopes/add"
-    name="add-zope-instance"
-    view=".views.zope_instances.add"
-    />
-
-  <route
-    path="/zopes/save"
-    name="save-new-zope-instance"
-    view=".views.zope_instances.save"
-    />
-    
-  <route
-    path="/zopes/:item_id"
-    name="view-zope-instance"
-    view=".views.zope_instances.view"
-    />
-
-  <route
-    path="/zopes/:item_id/edit"
-    name="edit-zope-instance"
-    view=".views.zope_instances.edit"
-    />
-
-  <route
-    path="/zopes/:item_id/save"
-    name="save-zope-instance"
-    view=".views.zope_instances.save"
-    />
-
-  <route
-    path="/zopes/:item_id/delete"
-    name="delete-zope-instance"
-    view=".views.zope_instances.delete"
-    />
-
+     
 </configure>

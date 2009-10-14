@@ -14,7 +14,6 @@ kelpie.egg-info/requires.txt
 kelpie.egg-info/top_level.txt
 kelpie/models/__init__.py
 kelpie/views/__init__.py
-kelpie/views/home.py
 kelpie/views/server.py
 kelpie/views/static.py
 kelpie/views/zope_instances.py
