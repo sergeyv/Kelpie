@@ -19,10 +19,9 @@
 
 <table>
 <tr tal:repeat="instance instances">
-<td><a href="${request.application_url}/zopes/${instance.id}" tal:content="instance.name" /></td>
-<td>${instance.url}</td>
-<td><a href="${request.application_url}/zopes/${instance.id}/edit">Edit</a></td>
-<td><a href="${request.application_url}/zopes/${instance.id}/delete">Delete</a></td>
+<td><a href="${request.application_url}/${context.typeinfo.slug}/${instance.id}" tal:content="instance" /></td>
+<td><a href="${request.application_url}/${context.typeinfo.slug}/${instance.id}/edit">Edit</a></td>
+<td><a href="${request.application_url}/${context.typeinfo.slug}/${instance.id}/delete">Delete</a></td>
 </tr>
 </table>
 

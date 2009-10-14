@@ -19,7 +19,7 @@
     name="static"
     view=".views.static.view"
     />
-
+<!--
   <route
     path="/zopes/"
     name="list-zope-instances"
@@ -61,5 +61,7 @@
     name="delete-zope-instance"
     view=".views.zope_instances.delete"
     />
+-->
+
 
 </configure>

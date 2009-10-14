@@ -6,7 +6,7 @@
 
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-    <title>${instance.name} - Kelpie</title>
+    <title>${instance} - Kelpie</title>
         <link rel="stylesheet" type="text/css"
           href="${request.application_url}/static/style.css" />
 </head>
@@ -15,9 +15,9 @@
 
 <div class="main_content">
 
-<h1>Delete Zope Instance</h1>
+<h1>Delete object</h1>
 
-<p>Delete ${instance.name}?</p>
+<p>Delete ${instance}?</p>
 <form method="post" action="delete">
 
 <input type="submit" name="form.button.confirm_delete" value="Delete" />

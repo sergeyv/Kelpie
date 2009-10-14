@@ -1,4 +1,4 @@
-from crud.registry import content_types_registry
+from crud.registry import get_typeinfo_by_slug
 from zope.interface import Interface
 from zope.interface import implements
 DBSession = None
@@ -16,7 +16,7 @@ def crud_init(session):
 class CrudRoot(object):
     def __getitem__(self, name):
         s = Section()
-        s.cls = content_types_registry[name]['class']
+        s.typeinfo = get_typeinfo_by_slug(name)
         return s
 
 section_views = ('add','save','delete')
@@ -24,9 +24,11 @@ section_views = ('add','save','delete')
 class Section(object):
     implements(ISection)
     def __getitem__(self, name):
+        cls = self.typeinfo['class']
         if name in section_views:
             raise KeyError
-        return DBSession.query(self.cls).filter(self.cls.id==name).one()
+        obj = DBSession.query(cls).filter(cls.id==name).one()
+        return obj
         
         
 crud_root = CrudRoot()

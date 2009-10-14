@@ -11,6 +11,35 @@
     name="add"
 />
 
+<view
+    for=".models.ISection"
+    view=".views.save"
+    name="save"
+/>
+
+<view
+    for=".models.IModel"
+    view=".views.view"
+/>
+
+<view
+    for=".models.IModel"
+    view=".views.edit"
+    name="edit"
+/>
+
+<view
+    for=".models.IModel"
+    view=".views.save"
+    name="save"
+/>
+
+<view
+    for=".models.IModel"
+    view=".views.delete"
+    name="delete"
+/>
+
 <!--
   <route
     path="/:content_type_slug/"

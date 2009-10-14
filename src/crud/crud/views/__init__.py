@@ -1,3 +1,4 @@
+
 from repoze.bfg.chameleon_zpt import render_template_to_response as render
 from webob.exc import HTTPFound
 
@@ -5,12 +6,15 @@ from formalchemy import FieldSet
 
 from crud.models import DBSession
 
-from crud import get_content_type
+from crud import get_typeinfo_by_slug
+from crud import IModel
 
 def index(context,request):
     dbsession = DBSession()
-    instances = dbsession.query(context.cls).all()
+    cls = context.typeinfo['class']
+    instances = dbsession.query(cls).all()
     return render('templates/index.pt',
+                  context=context,
                   instances = instances,
                   request = request,
                  )
@@ -31,28 +35,30 @@ def edit(context, request):
 
 def add(context, request):
     dbsession = DBSession()
-    instance =  context.cls()
+    cls = context.typeinfo['class']
+    instance =  cls()
     fs = FieldSet(instance, session=dbsession)
     return render('templates/add.pt',
                   instance = instance,
+                  context = context,
                   form = fs.render(),
                   request = request,
                  )
 
 def save(context, request):
-    slug = request.matchdict['content_type_slug']
     if 'form.button.cancel' in request.params:
         return HTTPFound(location=success_url)
-    id = request.matchdict.get('item_id', None)
-    dbsession = DBSession()
-    if id:
-        instance = dbsession.query(cls).filter(cls.id==id).one()
+    existing = IModel.providedBy(context)
+    if existing:
+        instance = context
     else:
+        cls = context.typeinfo['class']
         instance = cls()
-    fs = FieldSet(instance)
+    dbsession = DBSession()
+    fs = FieldSet(instance, session=dbsession)
     fs.rebind(instance, data=request.params)
     if fs.validate(): fs.sync()
-    if not id:
+    if not existing:
         dbsession.add(instance)
     #instance.save()
     success_url = request.path_url.rpartition('/')[0]+ '/'
@@ -60,21 +66,16 @@ def save(context, request):
     return HTTPFound(location=success_url)
 
     
-def delete(request):
-    slug = request.matchdict['content_type_slug']
+def delete(context, request):
+    success_url = request.path_url.rpartition('/')[0]+ '/'
     if 'form.button.cancel' in request.params:
         return HTTPFound(location=success_url)
-        
-    id = request.matchdict.get('item_id', None)
-    dbsession = DBSession()
-    instance = dbsession.query(cls).filter(cls.id==id).one()
     if 'form.button.confirm_delete' in request.params:
-        dbsession.delete(instance)
-        #instance.save()
+        dbsession = DBSession()
+        dbsession.delete(context)
         return HTTPFound(location=success_url)
-
     return render('templates/delete.pt',
-                  instance = instance,
+                  instance = context,
                   request = request,
                  )
 
