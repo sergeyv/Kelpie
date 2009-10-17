@@ -26,6 +26,7 @@ import crud
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
+
 class Server(Base):
     implements(IModel)
     __tablename__ = 'servers'
@@ -40,9 +41,11 @@ class Server(Base):
 
 crud.register(Server,
     pretty_name = 'Server',
-    pretty_name_plural = 'Servers',
-    slug='servers',
-    listing_fields = ('name','ssh_url'),
+    slug_fn = lambda a: a.id,
+    title_fn = lambda a: a.name,
+    subitems = {
+        'zopes' : Section(ZopeInstance, 'Zope instances')
+    }
     )
     
 class ZopeInstance(Base):
@@ -60,8 +63,11 @@ class ZopeInstance(Base):
 
 crud.register(ZopeInstance,
     pretty_name = 'Zope Instance',
-    slug='zopes',
-    listing_fields = ('name','url'),
+    slug_fn = lambda a: a.id,
+    title_fn = lambda a: a.name,
+    subitems = {
+        'products' : Section(Product, 'Product')
+    }
     )
 
 
@@ -78,7 +84,11 @@ class BuildoutInstance(Base):
 
 crud.register(BuildoutInstance,
     pretty_name = 'Buildouts',
-    slug='buildouts',
+    slug_fn = lambda a: a.id,
+    title_fn = lambda a: a.name,
+    subitems = {
+        'products' : Section(Product, 'Product')
+    }
     )
 
     
@@ -94,8 +104,8 @@ class ZopeProduct(Base):
 
 crud.register(ZopeProduct,
     pretty_name = 'Product',
-    slug='products',
-    listing_fields = ('name','url'),
+    slug_fn = lambda a: a.id,
+    title_fn = lambda a: a.name,
     )
 
 class Project(Base):
@@ -109,8 +119,18 @@ class Project(Base):
         return self.name
 
 crud.register(Project,
-    slug='projects',
+    slug_fn = lambda a: a.id,
+    title_fn = lambda a: a.name,
     )
+
+root = crud.ApplicationRoot(
+    subsections = {
+        'zopes' : crud.Section(ZopeInstance, "Zope Instances"),
+        'servers' : crud.Section(Server, "Servers"),
+    }
+)
+
+crud.crud_init(DBSession, root)
     
 def initialize_sql(db, echo=False):
     engine = create_engine(db, echo=echo)
@@ -130,4 +150,5 @@ def initialize_sql(db, echo=False):
     except IntegrityError:
         # already created
         pass
+
 
