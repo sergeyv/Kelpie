@@ -1,0 +1,8 @@
+*.pyc
+*~
+.installed.cfg
+bin/
+develop-eggs/
+eggs/
+kelpie/kelpie.db
+kelpie/kelpie.egg-info/PKG-INFO
