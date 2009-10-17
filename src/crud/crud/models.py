@@ -28,7 +28,7 @@ class Section(object):
     implements(ISection)
 
     def __init__(self, class_, title):
-        self.class_ = class
+        self.class_ = class_
         self.title = title
 
     def __getitem__(self, name):

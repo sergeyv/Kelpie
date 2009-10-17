@@ -44,7 +44,7 @@ crud.register(Server,
     slug_fn = lambda a: a.id,
     title_fn = lambda a: a.name,
     subitems = {
-        'zopes' : Section(ZopeInstance, 'Zope instances')
+        'zopes' : crud.Section(ZopeInstance, 'Zope instances')
     }
     )
     
@@ -66,7 +66,7 @@ crud.register(ZopeInstance,
     slug_fn = lambda a: a.id,
     title_fn = lambda a: a.name,
     subitems = {
-        'products' : Section(Product, 'Product')
+        'products' : crud.Section(Product, 'Product')
     }
     )
 
@@ -87,7 +87,7 @@ crud.register(BuildoutInstance,
     slug_fn = lambda a: a.id,
     title_fn = lambda a: a.name,
     subitems = {
-        'products' : Section(Product, 'Product')
+        'products' : crud.Section(Product, 'Product')
     }
     )
 
