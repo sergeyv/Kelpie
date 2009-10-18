@@ -38,18 +38,10 @@ class Server(Base):
 
     def __repr__(self):
         return self.name
-
-crud.register(Server,
-    pretty_name = 'Server',
-    slug_fn = lambda a: a.id,
-    title_fn = lambda a: a.name,
-    subitems = {
-        'zopes' : crud.Section(ZopeInstance, 'Zope instances')
-    }
-    )
     
 class ZopeInstance(Base):
     """ The SQLAlchemy declarative model class for a Page object. """
+    implements(IModel)
     __tablename__ = 'zope_instances'
     id = Column(Integer, primary_key=True)
     name = Column(String(100), unique=True)
@@ -61,17 +53,9 @@ class ZopeInstance(Base):
     def __repr__(self):
         return self.name
 
-crud.register(ZopeInstance,
-    pretty_name = 'Zope Instance',
-    slug_fn = lambda a: a.id,
-    title_fn = lambda a: a.name,
-    subitems = {
-        'products' : crud.Section(Product, 'Product')
-    }
-    )
-
 
 class BuildoutInstance(Base):
+    implements(IModel)
     __tablename__ = 'buildout_instances'
     id = Column(Integer, primary_key=True)
     name = Column(String(100), unique=True)
@@ -82,17 +66,9 @@ class BuildoutInstance(Base):
     def __repr__(self):
         return self.name
 
-crud.register(BuildoutInstance,
-    pretty_name = 'Buildouts',
-    slug_fn = lambda a: a.id,
-    title_fn = lambda a: a.name,
-    subitems = {
-        'products' : crud.Section(Product, 'Product')
-    }
-    )
-
     
 class ZopeProduct(Base):
+    implements(IModel)
     __tablename__ = 'zope_products'
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
@@ -102,13 +78,8 @@ class ZopeProduct(Base):
     def __repr__(self):
         return "%s (%s)" % (self.name, self.version)
 
-crud.register(ZopeProduct,
-    pretty_name = 'Product',
-    slug_fn = lambda a: a.id,
-    title_fn = lambda a: a.name,
-    )
-
 class Project(Base):
+    implements(IModel)
     __tablename__ = 'projects'
     id = Column(Integer, primary_key = True)
     name = Column(String(100))
@@ -117,6 +88,36 @@ class Project(Base):
 
     def __repr__(self):
         return self.name
+
+crud.register(Server,
+    pretty_name = 'Server',
+    slug_fn = lambda a: a.id,
+    title_fn = lambda a: a.name,
+    subsections = {
+        'zopes' : crud.Section(ZopeInstance, 'Zope instances')
+    }
+)
+
+crud.register(ZopeInstance,
+    pretty_name = 'Zope Instance',
+    slug_fn = lambda a: a.id,
+    title_fn = lambda a: a.name,
+    subsections = {
+        'products' : crud.Section(ZopeProduct, 'Product')
+    }
+)
+
+crud.register(BuildoutInstance,
+    pretty_name = 'Buildouts',
+    slug_fn = lambda a: a.id,
+    title_fn = lambda a: a.name,
+)
+
+crud.register(ZopeProduct,
+    pretty_name = 'Product',
+    slug_fn = lambda a: a.id,
+    title_fn = lambda a: a.name,
+)
 
 crud.register(Project,
     slug_fn = lambda a: a.id,
@@ -130,25 +131,12 @@ root = crud.ApplicationRoot(
     }
 )
 
-crud.crud_init(DBSession, root)
     
 def initialize_sql(db, echo=False):
     engine = create_engine(db, echo=echo)
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
-    Base.metadata.create_all(engine)
-    
-    from crud import crud_init
-    crud_init(DBSession)
-    try:
-        session = DBSession()
-        instance = ZopeInstance()
-        instance.name = 'A zope instance'
-        instance.url = 'http://localhost:8080/'
-        session.add(instance)
-        transaction.commit()
-    except IntegrityError:
-        # already created
-        pass
+    Base.metadata.create_all(engine)    
+    crud.crud_init(DBSession, root)
 
 

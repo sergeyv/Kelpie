@@ -16,6 +16,9 @@
 <div class="main_content">
 <ul>
 <li>${instance}</li>
+
+<tal:from replace="structure form" />
+
 <li><a href="${request.application_url}/zopes/${instance.id}/edit">[Edit]</a></li>
 
 </ul>

@@ -19,13 +19,13 @@
 
 <table>
 <tr tal:repeat="instance instances">
-<td><a href="${request.application_url}/${context.typeinfo.slug}/${instance.id}" tal:content="instance" /></td>
-<td><a href="${request.application_url}/${context.typeinfo.slug}/${instance.id}/edit">Edit</a></td>
-<td><a href="${request.application_url}/${context.typeinfo.slug}/${instance.id}/delete">Delete</a></td>
+<td><a href="${context.section_url(request, instance)}">${instance}</a></td>
+<td><a href="${context.section_url(request, instance, 'edit')}">Edit</a></td>
+<td><a href="${context.section_url(request, instance, 'delete')}">Delete</a></td>
 </tr>
 </table>
 
-<p><a href="add">[Add]</a></p>
+<p><a href="${context.section_url(request,'add')}">[Add]</a></p>
 You can return to the <a href="${request.application_url}">FrontPage</a>.
 </div>
 
