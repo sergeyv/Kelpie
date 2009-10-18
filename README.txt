@@ -1,3 +1,13 @@
+What Kelpie is
+==============
+
+Kelpie is an app to manage Zope instances
+
+What Crud is
+============
+
+Crud is sort-of "automatic admin" for repoze.bfg/SQLAlchemy/FormAlchemy
+
 Buildout for repoze.bfg
 =======================
 

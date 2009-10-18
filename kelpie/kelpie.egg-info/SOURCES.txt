@@ -14,12 +14,7 @@ kelpie.egg-info/requires.txt
 kelpie.egg-info/top_level.txt
 kelpie/models/__init__.py
 kelpie/views/__init__.py
-<<<<<<< HEAD:kelpie/kelpie.egg-info/SOURCES.txt
-=======
-kelpie/views/crud.py
 kelpie/views/home.py
->>>>>>> 19a905c0188626d424f508c25c36546b1f92a505:kelpie/kelpie.egg-info/SOURCES.txt
 kelpie/views/server.py
-kelpie/views/servers.py
 kelpie/views/static.py
 kelpie/views/zope_instances.py
