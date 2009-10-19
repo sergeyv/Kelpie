@@ -89,6 +89,19 @@ class Project(Base):
     def __repr__(self):
         return self.name
 
+from sqlalchemy.orm import compile_mappers, class_mapper
+from sqlalchemy.orm.properties import RelationProperty
+compile_mappers()
+
+mapper = class_mapper(ZopeInstance)
+
+for prop in mapper.iterate_properties:
+    print prop, prop.__class__
+    if prop.__class__ == RelationProperty:
+        print "TADA"
+        for (name, value) in prop.__dict__.items():
+            print "%s: %s" % (name, value)
+    
 crud.register(Server,
     pretty_name = 'Server',
     slug_fn = lambda a: a.id,
