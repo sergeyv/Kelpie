@@ -1,19 +1,13 @@
 
-slug_registry = dict()
-class_registry = dict()
+class_registry = list()
 
 def register(cls, **kwargs):
     ti = kwargs
     ti['class'] = cls
-    slug = ti.get('slug', cls.__name__) 
-    slug_registry[slug] = ti
-    class_registry[cls] = ti
-
-def get_typeinfo_by_slug(slug):
-    return slug_registry[slug]
-
-def get_typeinfo_by_class(cls):
-    return class_registry[cls]
+    ti['slug_fn'] = ti.get('slug_fn', lambda a: a.id)
+    ti['title_fn'] = ti.get('title_fn', lambda a: a.title)
+    cls.crud_typeinfo = ti 
+    class_registry.append(cls)
 
 def get_registered_types():
-    return slug_registry
+    return class_registry

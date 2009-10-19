@@ -103,7 +103,7 @@ crud.register(ZopeInstance,
     slug_fn = lambda a: a.id,
     title_fn = lambda a: a.name,
     subsections = {
-        'products' : crud.Section(ZopeProduct, 'Product')
+        'products' : crud.Section(ZopeProduct, 'Product', ZopeProduct.zope_instance_id)
     }
 )
 
@@ -128,6 +128,7 @@ root = crud.ApplicationRoot(
     subsections = {
         'zopes' : crud.Section(ZopeInstance, "Zope Instances"),
         'servers' : crud.Section(Server, "Servers"),
+        'products' : crud.Section(ZopeProduct, "All Products"),
     }
 )
 

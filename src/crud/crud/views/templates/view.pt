@@ -19,6 +19,18 @@
 
 <tal:from replace="structure form" />
 
+<p><strong>Sub-sections:</strong></p>
+<dl>
+    <tal:loop repeat="section subsections">
+        <dt>${section['section'].title}</dt>
+        <ul>
+        <tal:loop repeat="item section['items']">
+           <li><a href="TODO">${item}</a></li>
+        </tal:loop>
+        </ul>
+    </tal:loop>
+</dl>
+
 <li><a href="${request.application_url}/zopes/${instance.id}/edit">[Edit]</a></li>
 
 </ul>

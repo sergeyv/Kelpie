@@ -6,7 +6,6 @@ from webob.exc import HTTPFound
 from formalchemy import FieldSet
 from crud.models import DBSession
 
-from crud import get_typeinfo_by_slug
 from crud import IModel
 
 def index(context,request):
@@ -21,14 +20,29 @@ def index(context,request):
                  )
                                        
 def view(context, request):
+    dbsession = DBSession()
     fs = FieldSet(context)
     include = []
+    # render context's fiels using FA
     for (k, field) in fs.render_fields.items():
         include.append(field.readonly())
     fs.configure(include=include)
+    # subitems
+    subsections = []
+    for (key, section) in context.crud_typeinfo['subsections'].items():
+        query = dbsession.query(section.class_)
+        if section.join_field:
+            query = query.filter(section.join_field == context.id)
+        items = query.all()
+        subsections.append({
+            'section': section,
+            'items' : items,
+        })
+        
     return render('templates/view.pt',
                    instance = context,
                    form = fs.render(),
+                   subsections = subsections,
                    request = request,
                   )
 

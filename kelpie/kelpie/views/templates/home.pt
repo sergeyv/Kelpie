@@ -31,7 +31,7 @@
       </div>
       
     <ul>
-        <li tal:repeat="key items"><a href="${key}">${key}</a></li>
+        <li tal:repeat="key items.keys()"><a href="${key}">${items[key].title}</a></li>
     </ul>
     </div>
     <!-- end content -->

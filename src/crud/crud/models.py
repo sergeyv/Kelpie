@@ -1,4 +1,3 @@
-from crud.registry import get_typeinfo_by_slug
 from zope.interface import Interface
 from zope.interface import implements
 
@@ -34,15 +33,19 @@ section_views = ('add','save','delete')
 class Section(object):
     implements(ISection)
 
-    def __init__(self, class_, title):
+    def __init__(self, class_, title, join_field=None):
         self.class_ = class_
         self.title = title
+        self.join_field = join_field
 
     def __getitem__(self, name):
         if name in section_views:
             raise KeyError
         try:
-            obj = DBSession.query(self.class_).filter(self.class_.id==name).one()
+            query = DBSession.query(self.class_).filter(self.class_.id==name)
+            if self.join_field:
+                query = query.filter(self.join_field == __parent__.id)
+            obj = query.one()
         except orm.exc.NoResultFound:
             raise KeyError
             
