@@ -28,7 +28,6 @@ Base = declarative_base()
 
 
 class Server(Base):
-    implements(IModel)
     __tablename__ = 'servers'
     id = Column(Integer, primary_key = True)
     name = Column(String(100), unique=True)
@@ -41,7 +40,6 @@ class Server(Base):
     
 class ZopeInstance(Base):
     """ The SQLAlchemy declarative model class for a Page object. """
-    implements(IModel)
     __tablename__ = 'zope_instances'
     id = Column(Integer, primary_key=True)
     name = Column(String(100), unique=True)
@@ -55,7 +53,6 @@ class ZopeInstance(Base):
 
 
 class BuildoutInstance(Base):
-    implements(IModel)
     __tablename__ = 'buildout_instances'
     id = Column(Integer, primary_key=True)
     name = Column(String(100), unique=True)
@@ -68,7 +65,6 @@ class BuildoutInstance(Base):
 
     
 class ZopeProduct(Base):
-    implements(IModel)
     __tablename__ = 'zope_products'
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
@@ -79,7 +75,6 @@ class ZopeProduct(Base):
         return "%s (%s)" % (self.name, self.version)
 
 class Project(Base):
-    implements(IModel)
     __tablename__ = 'projects'
     id = Column(Integer, primary_key = True)
     name = Column(String(100))
@@ -106,18 +101,26 @@ crud.register(Server,
     pretty_name = 'Server',
     slug_fn = lambda a: a.id,
     title_fn = lambda a: a.name,
-    subsections = {
-        'zopes' : crud.Section(ZopeInstance, 'Zope instances')
-    }
+    subsections = [
+        crud.SectionFactory('Zope instances', 'zopes'),
+    ]
 )
 
+class ServerProxy(crud.ModelProxy):
+    pretty_name = 'Server'
+    subsections = [
+        crud.SectionFactory('Zope instances', 'zopes'),
+    ]
+
+crud.register(Server, ServerProxy)
 crud.register(ZopeInstance,
     pretty_name = 'Zope Instance',
     slug_fn = lambda a: a.id,
     title_fn = lambda a: a.name,
-    subsections = {
-        'products' : crud.Section(ZopeProduct, 'Product', ZopeProduct.zope_instance_id)
-    }
+    subsections = [
+        crud.SectionFactory('Products', 'products'),
+        crud.SectionFactory('Buildouts', 'buildout_instances'),
+    ]
 )
 
 crud.register(BuildoutInstance,
@@ -139,9 +142,9 @@ crud.register(Project,
 
 root = crud.ApplicationRoot(
     subsections = {
-        'zopes' : crud.Section(ZopeInstance, "Zope Instances"),
-        'servers' : crud.Section(Server, "Servers"),
-        'products' : crud.Section(ZopeProduct, "All Products"),
+        'zopes' : crud.RootSection(ZopeInstance, "All Zope Instances"),
+        'servers' : crud.RootSection(Server, "All Servers"),
+        'products' : crud.RootSection(ZopeProduct, "All Products"),
     }
 )
 

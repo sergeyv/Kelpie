@@ -6,13 +6,14 @@ from webob.exc import HTTPFound
 from formalchemy import FieldSet
 from crud.models import DBSession
 
-from crud import IModel
+from crud import IModel, ISection, ModelProxy
 
 def index(context,request):
     dbsession = DBSession()
-    #cls = context.typeinfo['class']
     
     instances = dbsession.query(context.class_).all()
+    # wrap them in the location-aware proxy
+    instances = [ModelProxy(context, str(obj.id), obj) for obj in instances]
     return render('templates/index.pt',
                   context=context,
                   instances = instances,
@@ -21,7 +22,7 @@ def index(context,request):
                                        
 def view(context, request):
     dbsession = DBSession()
-    fs = FieldSet(context)
+    fs = FieldSet(context.model)
     include = []
     # render context's fiels using FA
     for (k, field) in fs.render_fields.items():
@@ -29,32 +30,34 @@ def view(context, request):
     fs.configure(include=include)
     # subitems
     subsections = []
-    for (key, section) in context.crud_typeinfo['subsections'].items():
-        query = dbsession.query(section.class_)
-        if section.join_field:
-            query = query.filter(section.join_field == context.id)
-        items = query.all()
-        subsections.append({
-            'section': section,
-            'items' : items,
-        })
+    #for section in context.model.crud_typeinfo['subsections']:
+    #    query = dbsession.query(section.class_)
+    #    if section.join_field:
+    #        query = query.filter(section.join_field == context.id)
+    #    items = query.all()
+    #    subsections.append({
+    #        'section': section,
+    #        'items' : items,
+    #    })
         
     return render('templates/view.pt',
-                   instance = context,
+                   instance = context.model,
                    form = fs.render(),
                    subsections = subsections,
                    request = request,
                   )
 
 def edit(context, request):
-    fs = FieldSet(context)
+    # context is ModelProxy here
+    fs = FieldSet(context.model)
     return render('templates/edit.pt',
-                  instance = context,
+                  instance = context.model,
                   form = fs.render(),
                   request = request,
                  )
 
 def add(context, request):
+    # context is Section here
     dbsession = DBSession()
     instance =  context.class_()
     fs = FieldSet(instance, session=dbsession)
@@ -73,7 +76,7 @@ def save(context, request):
         return HTTPFound(location=success_url)
     existing = IModel.providedBy(context)
     if existing:
-        instance = context
+        instance = context.model
     else:
         instance = context.class_()
     dbsession = DBSession()
@@ -97,10 +100,10 @@ def delete(context, request):
         return HTTPFound(location=success_url)
     if 'form.button.confirm_delete' in request.params:
         dbsession = DBSession()
-        dbsession.delete(context)
+        dbsession.delete(context.model)
         return HTTPFound(location=success_url)
     return render('templates/delete.pt',
-                  instance = context,
+                  instance = context.model,
                   request = request,
                  )
 
