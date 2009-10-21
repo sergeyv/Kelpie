@@ -6,7 +6,7 @@
 
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-    <title>${instance} - Kelpie</title>
+    <title>${context.model} - Kelpie</title>
         <link rel="stylesheet" type="text/css"
           href="${request.application_url}/static/style.css" />
 </head>
@@ -15,7 +15,7 @@
 
 <div class="main_content">
 <ul>
-<li>${instance}</li>
+<h1>${context.pretty_name} ${context}</h1>
 
 <tal:from replace="structure form" />
 
@@ -31,7 +31,7 @@
     </tal:loop>
 </dl>
 
-<li><a href="${request.application_url}/zopes/${instance.id}/edit">[Edit]</a></li>
+<li><a href="${request.application_url}/zopes/${context.model.id}/edit">[Edit]</a></li>
 
 </ul>
 

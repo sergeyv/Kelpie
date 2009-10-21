@@ -41,7 +41,7 @@ def view(context, request):
     #    })
         
     return render('templates/view.pt',
-                   instance = context.model,
+                   context = context,
                    form = fs.render(),
                    subsections = subsections,
                    request = request,
@@ -51,7 +51,7 @@ def edit(context, request):
     # context is ModelProxy here
     fs = FieldSet(context.model)
     return render('templates/edit.pt',
-                  instance = context.model,
+                  context = context,
                   form = fs.render(),
                   request = request,
                  )

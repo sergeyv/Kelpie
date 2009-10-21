@@ -6,7 +6,7 @@
 
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-    <title>${instance.name} - Kelpie</title>
+    <title>Edit ${context.pretty_name} - Kelpie</title>
         <link rel="stylesheet" type="text/css"
           href="${request.application_url}/static/style.css" />
 </head>
@@ -15,7 +15,7 @@
 
 <div class="main_content">
 
-<h1>Edit Zope Instance</h1>
+<h1>Edit ${context.pretty_name}</h1>
 
 <form method="post" action="save">
 <tal:from replace="structure form" />

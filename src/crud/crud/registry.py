@@ -1,13 +1,16 @@
 
-class_registry = list()
+model_registry = dict()
 
-def register(cls, **kwargs):
-    ti = kwargs
-    ti['class'] = cls
-    ti['slug_fn'] = ti.get('slug_fn', lambda a: a.id)
-    ti['title_fn'] = ti.get('title_fn', lambda a: a.title)
-    cls.crud_typeinfo = ti 
-    class_registry.append(cls)
+def register(model_class, proxy_class=None):
+    # every model can have just one proxy
+    # however, a proxy may be used for several models
+    if proxy_class is None:
+        from crud.models import ModelProxy
+        proxy_class = ModelProxy
+    model_registry[model_class] = proxy_class
 
 def get_registered_types():
-    return class_registry
+    return model_registry.keys()
+
+def get_proxy_for_model(model_class):
+    return model_registry[model_class]

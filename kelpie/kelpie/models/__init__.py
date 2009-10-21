@@ -97,15 +97,7 @@ for prop in mapper.iterate_properties:
         for (name, value) in prop.__dict__.items():
             print "%s: %s" % (name, value)
     
-crud.register(Server,
-    pretty_name = 'Server',
-    slug_fn = lambda a: a.id,
-    title_fn = lambda a: a.name,
-    subsections = [
-        crud.SectionFactory('Zope instances', 'zopes'),
-    ]
-)
-
+# Register our classes with crud
 class ServerProxy(crud.ModelProxy):
     pretty_name = 'Server'
     subsections = [
@@ -113,7 +105,8 @@ class ServerProxy(crud.ModelProxy):
     ]
 
 crud.register(Server, ServerProxy)
-crud.register(ZopeInstance,
+
+class ZopeInstanceProxy(crud.ModelProxy):
     pretty_name = 'Zope Instance',
     slug_fn = lambda a: a.id,
     title_fn = lambda a: a.name,
@@ -121,24 +114,12 @@ crud.register(ZopeInstance,
         crud.SectionFactory('Products', 'products'),
         crud.SectionFactory('Buildouts', 'buildout_instances'),
     ]
-)
 
-crud.register(BuildoutInstance,
-    pretty_name = 'Buildouts',
-    slug_fn = lambda a: a.id,
-    title_fn = lambda a: a.name,
-)
+crud.register(ZopeInstance, ZopeInstanceProxy)
 
-crud.register(ZopeProduct,
-    pretty_name = 'Product',
-    slug_fn = lambda a: a.id,
-    title_fn = lambda a: a.name,
-)
-
-crud.register(Project,
-    slug_fn = lambda a: a.id,
-    title_fn = lambda a: a.name,
-    )
+crud.register(BuildoutInstance)
+crud.register(ZopeProduct)
+crud.register(Project)
 
 root = crud.ApplicationRoot(
     subsections = {
