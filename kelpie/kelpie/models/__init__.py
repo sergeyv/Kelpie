@@ -84,24 +84,24 @@ class Project(Base):
     def __repr__(self):
         return self.name
 
-from sqlalchemy.orm import compile_mappers, class_mapper
-from sqlalchemy.orm.properties import RelationProperty
-compile_mappers()
+#from sqlalchemy.orm import compile_mappers, class_mapper
+#from sqlalchemy.orm.properties import RelationProperty
+#compile_mappers()
 
-mapper = class_mapper(ZopeInstance)
+#mapper = class_mapper(ZopeInstance)
 
-for prop in mapper.iterate_properties:
-    print prop, prop.__class__
-    if prop.__class__ == RelationProperty:
-        print "TADA"
-        for (name, value) in prop.__dict__.items():
-            print "%s: %s" % (name, value)
+#for prop in mapper.iterate_properties:
+#    print prop, prop.__class__
+#    if prop.__class__ == RelationProperty:
+#        print "TADA"
+#        for (name, value) in prop.__dict__.items():
+#            print "%s: %s" % (name, value)
     
 # Register our classes with crud
 class ServerProxy(crud.ModelProxy):
     pretty_name = 'Server'
     subsections = [
-        crud.SectionFactory('Zope instances', 'zopes'),
+        crud.SectionFactory(Server.zope_instances, 'Zope instances', 'zope_instances'),
     ]
 
 crud.register(Server, ServerProxy)
@@ -111,8 +111,8 @@ class ZopeInstanceProxy(crud.ModelProxy):
     slug_fn = lambda a: a.id,
     title_fn = lambda a: a.name,
     subsections = [
-        crud.SectionFactory('Products', 'products'),
-        crud.SectionFactory('Buildouts', 'buildout_instances'),
+        crud.SectionFactory(ZopeInstance.products, 'Products', 'products'),
+        crud.SectionFactory(ZopeInstance.buildout_instances, 'Buildouts', 'buildout_instances'),
     ]
 
 crud.register(ZopeInstance, ZopeInstanceProxy)

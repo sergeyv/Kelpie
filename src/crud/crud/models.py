@@ -60,19 +60,35 @@ class ApplicationRoot(object):
         s.__name__ = name
         return s
 
+from sqlalchemy.orm import compile_mappers, class_mapper
+from sqlalchemy.orm.properties import RelationProperty
 
 class SectionFactory(object):
-    def __init__(self, title, relation_name, name=None):
+    def __init__(self, relation_prop, title, name=None):
         self.title = title
-        self.relation_name = relation_name
-        TODO: get section's class name here using our parent class and relation name
-        (through mappers I guess
-        self.name = name or relation_name
+        self.relation = relation_prop
+        #TODO: get section's class name here using our parent class and relation name
+        #(through mappers I guess
+        self.name = name or self.relation.key
+        #mapper = class_mapper(parent_class)
+        #prop = getattr(mapper, relation_name, None)
+        print "*"*80
+        for (name, value) in relation_prop.__dict__.items():
+            print "%s: %s" % (name, value)
+        print "-"*80
+        p = relation_prop.parententity.get_property(relation_prop.key)
+        print p.__class__
+        for (name, value) in p.__dict__.items():
+            print "%s: %s" % (name, value)
+        print "+"*80
+        for (name, value) in p.__class__.__base__.__dict__.items():
+            print "%s: %s" % (name, value)
     
     def create_section(self, parent):
         section = Section(self.title, self.relation_name)
         section.__parent__ = parent
         section.__name__ = self.name
+        section.relation = self.relation
         return section
 
         
@@ -87,6 +103,7 @@ class Section(object):
         if name in section_views:
             raise KeyError
         try:
+            #TODO: get just one object here using our relation property
             query = DBSession.query(self.class_).filter(self.class_.id==name)
             if self.join_field:
                 query = query.filter(self.join_field == __parent__.id)
