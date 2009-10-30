@@ -1,6 +1,7 @@
 from zope.interface import Interface
 from zope.interface import implements
 
+from webob.exc import HTTPNotFound
 from repoze.bfg.url import model_url
 
 from sqlalchemy import orm
@@ -16,6 +17,16 @@ class ISection(Interface):
 
 section_views = ('add','save','delete')
 model_views = ('edit', 'save', 'delete')
+
+def get_related_by_id(obj, id, property_name=None):
+    relation = getattr(obj.__class__, property_name)
+    related_class = relation.property.argument()
+    print "related class is %s" % related_class
+    q = DBSession.query(related_class)
+    q = q.with_parent(obj, property_name)
+    q = q.filter_by(id=int(id))
+    result = q.first() 
+    return result
 
 class ModelProxy(object):
     implements(IModel)
@@ -53,8 +64,6 @@ class ApplicationRoot(object):
         self.subsections = subsections
 
     def __getitem__(self, name):
-        #s = Section()
-        #s.typeinfo = get_typeinfo_by_slug(name)
         s = self.subsections[name]
         s.__parent__ = self
         s.__name__ = name
@@ -64,31 +73,16 @@ from sqlalchemy.orm import compile_mappers, class_mapper
 from sqlalchemy.orm.properties import RelationProperty
 
 class SectionFactory(object):
-    def __init__(self, relation_prop, title, name=None):
+    def __init__(self, relation_name, title, name=None):
+        self.relation_name = relation_name
         self.title = title
-        self.relation = relation_prop
-        #TODO: get section's class name here using our parent class and relation name
-        #(through mappers I guess
-        self.name = name or self.relation.key
-        #mapper = class_mapper(parent_class)
-        #prop = getattr(mapper, relation_name, None)
-        print "*"*80
-        for (name, value) in relation_prop.__dict__.items():
-            print "%s: %s" % (name, value)
-        print "-"*80
-        p = relation_prop.parententity.get_property(relation_prop.key)
-        print p.__class__
-        for (name, value) in p.__dict__.items():
-            print "%s: %s" % (name, value)
-        print "+"*80
-        for (name, value) in p.__class__.__base__.__dict__.items():
-            print "%s: %s" % (name, value)
+        self.name = name or self.relation_name
     
     def create_section(self, parent):
         section = Section(self.title, self.relation_name)
         section.__parent__ = parent
         section.__name__ = self.name
-        section.relation = self.relation
+        section.relation_name = self.relation_name
         return section
 
         
@@ -102,14 +96,9 @@ class Section(object):
     def __getitem__(self, name):
         if name in section_views:
             raise KeyError
-        try:
-            #TODO: get just one object here using our relation property
-            query = DBSession.query(self.class_).filter(self.class_.id==name)
-            if self.join_field:
-                query = query.filter(self.join_field == __parent__.id)
-            obj = query.one()
-        except orm.exc.NoResultFound:
-            raise KeyError
+        model = get_related_by_id(self.__parent__.model, name, self.relation_name)
+        if model is None:
+            raise HTTPNotFound       
         proxy_class = get_proxy_for_model(model.__class__)
         print "Proxy for %s is %s" % (model.__class__, proxy_class) 
         return proxy_class(self, name, model)
@@ -126,6 +115,23 @@ class Section(object):
             str_args.append(arg)
                 
         return model_url(self, request, *str_args)
+        
+    def get_subitems_class(self):    
+        relation = getattr(self.__parent__.model.__class__, self.relation_name)
+        related_class = relation.property.argument()
+        return related_class
+
+    def get_items(self):
+        # TODO: get all items which belong to our parent
+        related_class = self.get_subitems_class()
+        parent_class = self.__parent__.model
+        print "related class is %s" % related_class
+        q = DBSession.query(related_class)
+        q = q.with_parent(parent_class, self.relation_name)
+        #q = q.filter_by(id=int(id))
+        result = q.all() 
+        return result
+
 
 class RootSection(object):
     implements(ISection)

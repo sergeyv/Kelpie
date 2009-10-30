@@ -25,6 +25,6 @@ def app(global_config, **kw):
     if db_string is None:
         raise ValueError("No 'db_string' value in application configuration.")
 
-    initialize_sql(db_string)
+    initialize_sql(db_string, echo=True)
     return make_app(get_root, kelpie, options=kw)
 

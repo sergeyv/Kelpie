@@ -11,7 +11,8 @@ from crud import IModel, ISection, ModelProxy
 def index(context,request):
     dbsession = DBSession()
     
-    instances = dbsession.query(context.class_).all()
+    instances = context.get_items()
+    #instances = dbsession.query(context.class_).all()
     # wrap them in the location-aware proxy
     instances = [ModelProxy(context, str(obj.id), obj) for obj in instances]
     return render('templates/index.pt',
