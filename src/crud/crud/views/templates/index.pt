@@ -6,7 +6,7 @@
 
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-    <title>List Zope instances</title>
+    <title>${context.title}</title>
         <link rel="stylesheet" type="text/css"
           href="${request.application_url}/static/style.css" />
 </head>
@@ -15,7 +15,7 @@
 
 <div class="main_content">
 
-<h1>Zope instances</h1>
+<h1>${context.title}</h1>
 
 <table>
 <tr tal:repeat="instance instances">

@@ -9,12 +9,10 @@ from crud.models import DBSession
 from crud import IModel, ISection, ModelProxy
 
 def index(context,request):
+    # context is a Section object here
     dbsession = DBSession()
     
     instances = context.get_items()
-    #instances = dbsession.query(context.class_).all()
-    # wrap them in the location-aware proxy
-    instances = [ModelProxy(context, str(obj.id), obj) for obj in instances]
     return render('templates/index.pt',
                   context=context,
                   instances = instances,
@@ -22,15 +20,18 @@ def index(context,request):
                  )
                                        
 def view(context, request):
+    #context is ModelProxy here
     dbsession = DBSession()
     fs = FieldSet(context.model)
     include = []
     # render context's fiels using FA
+    # TODO: there's a way to set this on the form itself
+    # rather than on individual fields
     for (k, field) in fs.render_fields.items():
         include.append(field.readonly())
     fs.configure(include=include)
     # subitems
-    subsections = []
+    #ssubsections = []
     #for section in context.model.crud_typeinfo['subsections']:
     #    query = dbsession.query(section.class_)
     #    if section.join_field:
@@ -40,11 +41,12 @@ def view(context, request):
     #        'section': section,
     #        'items' : items,
     #    })
-        
+    #from repoze.bfg.location import lineage
+    #parents = [p for p in lineage(context)]
+    #assert False
     return render('templates/view.pt',
                    context = context,
                    form = fs.render(),
-                   subsections = subsections,
                    request = request,
                   )
 
@@ -60,7 +62,8 @@ def edit(context, request):
 def add(context, request):
     # context is Section here
     dbsession = DBSession()
-    instance =  context.class_()
+    item_class = context.get_subitems_class()
+    instance =  item_class()
     fs = FieldSet(instance, session=dbsession)
     return render('templates/add.pt',
                   instance = instance,
@@ -79,7 +82,8 @@ def save(context, request):
     if existing:
         instance = context.model
     else:
-        instance = context.class_()
+        item_class = context.get_subitems_class()
+        instance =  item_class()
     dbsession = DBSession()
     fs = FieldSet(instance, session=dbsession)
     fs.rebind(instance, data=request.params)

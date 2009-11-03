@@ -89,7 +89,7 @@ class Project(Base):
 class ServerProxy(crud.ModelProxy):
     pretty_name = 'Server'
     subsections = [
-        crud.SectionFactory('zope_instances', "Zope Instances"),
+        crud.Section('zope_instances', "Zope Instances"),
     ]
 
 crud.register(Server, ServerProxy)
@@ -99,8 +99,8 @@ class ZopeInstanceProxy(crud.ModelProxy):
     slug_fn = lambda a: a.id,
     title_fn = lambda a: a.name,
     subsections = [
-        crud.SectionFactory('products', 'Products'),
-        crud.SectionFactory('buildout_instances', 'Buildouts'),
+        crud.Section('products', 'Products'),
+        crud.Section('buildout_instances', 'Buildouts'),
     ]
 
 crud.register(ZopeInstance, ZopeInstanceProxy)

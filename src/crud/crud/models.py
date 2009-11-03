@@ -32,7 +32,8 @@ class ModelProxy(object):
     implements(IModel)
 
     pretty_name = 'Model'
-
+    subsections = []
+    
     def __init__(self, name, parent, model):
         self.__name__ = name
         self.__parent__ = parent
@@ -48,13 +49,18 @@ class ModelProxy(object):
             raise KeyError
         
         for factory in self.subsections:
-            print "subsection %s, name is %s" % (factory.name, name)
-            if factory.name == name:
+            print "subsection %s, name is %s" % (factory.__name__, name)
+            if factory.__name__ == name:
                 print "match!"
                 return factory.create_section(self)
         print "No match"
         raise KeyError
 
+    @property
+    def title(self):
+        return getattr(self.model, 'title',
+                    getattr(self.model, 'name',
+                    "%s %s" % (self.pretty_name, self.model.id)))
         
 class ApplicationRoot(object):
 
@@ -72,27 +78,38 @@ class ApplicationRoot(object):
 from sqlalchemy.orm import compile_mappers, class_mapper
 from sqlalchemy.orm.properties import RelationProperty
 
-class SectionFactory(object):
-    def __init__(self, relation_name, title, name=None):
-        self.relation_name = relation_name
-        self.title = title
-        self.name = name or self.relation_name
-    
-    def create_section(self, parent):
-        section = Section(self.title, self.relation_name)
-        section.__parent__ = parent
-        section.__name__ = self.name
-        section.relation_name = self.relation_name
-        return section
+#class SectionFactory(object):
+#    def __init__(self, relation_name, title, name=None):
+#        self.relation_name = relation_name
+#        self.title = title
+#        self.name = name or self.relation_name
+#    
+#    def create_section(self, parent):
+#        section = Section(self.title, self.relation_name)
+#        section.__parent__ = parent
+#        section.__name__ = self.name
+#        section.relation_name = self.relation_name
+#        return section
 
         
 class Section(object):
     implements(ISection)
 
-    def __init__(self, title, relation_name):
+    def __init__(self, relation_name, title, name=None):
         self.title = title
         self.relation_name = relation_name
+        self.__name__ = name or self.relation_name
+        
+    def __repr__(self):
+        return "Section %s (%s)" % (self.title, self.relation_name)
 
+    def create_section(self, parent):
+        section = Section(self.relation_name, self.title, self.__name__)
+        section.__parent__ = parent
+        #section.__name__ = self.name
+        #section.relation_name = self.relation_name
+        return section
+        
     def __getitem__(self, name):
         if name in section_views:
             raise KeyError
@@ -107,6 +124,7 @@ class Section(object):
         # args contain ModelProxies, not real objects
         str_args = []
         for arg in args:
+            print arg
             if IModel.providedBy(arg):
                 ### TODO: Do some fancy sluggification here
                 arg = str(arg.model.id)
@@ -114,6 +132,7 @@ class Section(object):
                 arg = str(arg)
             str_args.append(arg)
                 
+        print "self: %s, request:%s, args: %s, str_args: %s" % (self, request, args, str_args)
         return model_url(self, request, *str_args)
         
     def get_subitems_class(self):    
@@ -122,7 +141,6 @@ class Section(object):
         return related_class
 
     def get_items(self):
-        # TODO: get all items which belong to our parent
         related_class = self.get_subitems_class()
         parent_class = self.__parent__.model
         print "related class is %s" % related_class
@@ -130,6 +148,8 @@ class Section(object):
         q = q.with_parent(parent_class, self.relation_name)
         #q = q.filter_by(id=int(id))
         result = q.all() 
+        # wrap them in the location-aware proxy
+        result = [ModelProxy(name=str(obj.id), parent=self, model=obj) for obj in result]
         return result
 
 
@@ -150,7 +170,18 @@ class RootSection(object):
             raise KeyError           
         proxy_class = get_proxy_for_model(model.__class__)
         print "Proxy for %s is %s" % (model.__class__, proxy_class) 
-        return proxy_class(self, name, model)
+        return proxy_class(name=name, parent=self, model=model)
+
+    def get_subitems_class(self):
+        return self.class_
+        
+    def get_items(self):
+        # TODO: get all items which belong to our parent
+        q = DBSession.query(self.class_)
+        result = q.all() 
+        # wrap them in the location-aware proxy
+        result = [ModelProxy(name=str(obj.id), parent=self, model=obj) for obj in result]
+        return result
         
     def section_url(self, request, *args):
         str_args = []

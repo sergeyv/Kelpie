@@ -21,13 +21,15 @@
 
 <p><strong>Sub-sections:</strong></p>
 <dl>
-    <tal:loop repeat="section subsections">
-        <dt>${section['section'].title}</dt>
+    <tal:loop repeat="sf context.subsections">
+        <tal:def define="section sf.create_section(context)">
+        <dt><a href="${section.section_url(request)}">${sf.title}</a></dt>
         <ul>
-        <tal:loop repeat="item section['items']">
-           <li><a href="TODO">${item}</a></li>
+        <tal:loop repeat="item section.get_items()">
+           <li><a href="${section.section_url(request, item)}">${item.title}</a></li>
         </tal:loop>
         </ul>
+        </tal:def>
     </tal:loop>
 </dl>
 

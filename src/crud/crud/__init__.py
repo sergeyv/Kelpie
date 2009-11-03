@@ -5,4 +5,4 @@ from models import get_root
 from models import crud_init
 
 from models import ISection, IModel
-from models import ApplicationRoot, SectionFactory, RootSection, ModelProxy
+from models import ApplicationRoot, Section, RootSection, ModelProxy
