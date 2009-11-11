@@ -19,25 +19,27 @@
 
 <tal:from replace="structure form" />
 
-<p><strong>Sub-sections:</strong></p>
+<p><strong>Sub-sections!:</strong></p>
 <dl>
-    <tal:loop repeat="sf context.subsections">
-        <tal:def define="section sf.create_section(context)">
-        <dt><a href="${section.section_url(request)}">${sf.title}</a></dt>
+    <tal:loop repeat="section context.get_subsections()">
+        <dt><a href="${section.url(request)}">${section.title}</a></dt>
         <ul>
+        <tal:loop repeat="item section.get_subsections()">
+           <li><a href="${item.url(request)}">${item.title}</a></li>
+        </tal:loop>
+        <li>---</li>
         <tal:loop repeat="item section.get_items()">
-           <li><a href="${section.section_url(request, item)}">${item.title}</a></li>
+           <li><a href="${item.url(request)}">${item.title}</a></li>
         </tal:loop>
         </ul>
-        </tal:def>
     </tal:loop>
 </dl>
 
-<li><a href="${request.application_url}/zopes/${context.model.id}/edit">[Edit]</a></li>
+<li><a href="${context.url(request, 'edit')}">[Edit]</a></li>
 
 </ul>
 
-<a href="${request.application_url}/zopes/">Up one level</a>.
+<a href="${context.parent_url(request)}">Up one level</a>.
 </div>
 
 </body>

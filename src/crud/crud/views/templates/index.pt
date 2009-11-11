@@ -19,14 +19,27 @@
 
 <table>
 <tr tal:repeat="instance instances">
-<td><a href="${context.section_url(request, instance)}">${instance}</a></td>
-<td><a href="${context.section_url(request, instance, 'edit')}">Edit</a></td>
-<td><a href="${context.section_url(request, instance, 'delete')}">Delete</a></td>
+<td><a href="${context.child_url(request, instance)}">${instance}</a></td>
+<td><a href="${context.child_url(request, instance, 'edit')}">Edit</a></td>
+<td><a href="${context.child_url(request, instance, 'delete')}">Delete</a></td>
 </tr>
 </table>
 
-<p><a href="${context.section_url(request,'add')}">[Add]</a></p>
-You can return to the <a href="${request.application_url}">FrontPage</a>.
+<p><a href="${context.url(request,'add')}">[Add]</a></p>
+
+<p><strong>Sub-sections:</strong></p>
+<dl>
+    <tal:loop repeat="section context.get_subsections()">
+        <dt><a href="${section.url(request)}">${section.title}</a></dt>
+        <ul>
+        <tal:loop repeat="item section.get_items()">
+           <li><a href="${section.child_url(request, item)}">${item.title}</a></li>
+        </tal:loop>
+        </ul>
+    </tal:loop>
+</dl>
+
+<a href="${context.parent_url(request)}">Up one level</a>.
 </div>
 
 </body>

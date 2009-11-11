@@ -30,20 +30,6 @@ def view(context, request):
     for (k, field) in fs.render_fields.items():
         include.append(field.readonly())
     fs.configure(include=include)
-    # subitems
-    #ssubsections = []
-    #for section in context.model.crud_typeinfo['subsections']:
-    #    query = dbsession.query(section.class_)
-    #    if section.join_field:
-    #        query = query.filter(section.join_field == context.id)
-    #    items = query.all()
-    #    subsections.append({
-    #        'section': section,
-    #        'items' : items,
-    #    })
-    #from repoze.bfg.location import lineage
-    #parents = [p for p in lineage(context)]
-    #assert False
     return render('templates/view.pt',
                    context = context,
                    form = fs.render(),
@@ -97,7 +83,7 @@ def save(context, request):
 def delete(context, request):
     my_section = traversal.find_interface(context, ISection)
     if my_section:
-        success_url = my_section.section_url(request)
+        success_url = my_section.url(request)
     else:
         success_url = request.application_url
         

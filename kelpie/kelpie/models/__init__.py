@@ -88,9 +88,9 @@ class Project(Base):
 # Register our classes with crud
 class ServerProxy(crud.ModelProxy):
     pretty_name = 'Server'
-    subsections = [
-        crud.Section('zope_instances', "Zope Instances"),
-    ]
+    subsections = {
+        'zopes' : crud.Section('Zope Instances', 'zope_instances'),
+    }
 
 crud.register(Server, ServerProxy)
 
@@ -98,10 +98,10 @@ class ZopeInstanceProxy(crud.ModelProxy):
     pretty_name = 'Zope Instance',
     slug_fn = lambda a: a.id,
     title_fn = lambda a: a.name,
-    subsections = [
-        crud.Section('products', 'Products'),
-        crud.Section('buildout_instances', 'Buildouts'),
-    ]
+    subsections = {
+        'products' : crud.Section('Products', 'products'),
+        'buildouts' : crud.Section('Buildouts', 'buildout_instances'),
+    }
 
 crud.register(ZopeInstance, ZopeInstanceProxy)
 
@@ -109,12 +109,26 @@ crud.register(BuildoutInstance)
 crud.register(ZopeProduct)
 crud.register(Project)
 
-root = crud.ApplicationRoot(
+about_section = crud.Section(
+    "About", 
     subsections = {
-        'zopes' : crud.RootSection(ZopeInstance, "All Zope Instances"),
-        'servers' : crud.RootSection(Server, "All Servers"),
-        'products' : crud.RootSection(ZopeProduct, "All Products"),
+   'one' : crud.Section('Page One!'),
+   'two' : crud.Section('A folder!',
+        subsections = {
+            'uno' : crud.Section("Uno!"),
+            'duo' : crud.Section("Duo!"),
+        })
     }
+)
+
+root = crud.Section(
+    "Kelpie!",
+    subsections = dict(
+        zopes = crud.Section("All Zope Instances", ZopeInstance),
+        servers = crud.Section("All Servers", Server),
+        products = crud.Section("All Products", ZopeProduct),
+        about = about_section 
+        )
 )
 
     
