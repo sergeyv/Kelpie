@@ -15,6 +15,8 @@
 
 <div class="main_content">
 
+(section view)
+
 <h1>${context.title}</h1>
 
 <table>
@@ -25,15 +27,15 @@
 </tr>
 </table>
 
-<p><a href="${context.url(request,'add')}">[Add]</a></p>
+<p tal:condition="context.subitems_source"><a href="${context.item_url(request,'add')}">[Add]</a></p>
 
 <p><strong>Sub-sections:</strong></p>
 <dl>
     <tal:loop repeat="section context.get_subsections()">
-        <dt><a href="${section.url(request)}">${section.title}</a></dt>
+        <dt><a href="${section.item_url(request)}">${section.title}</a></dt>
         <ul>
         <tal:loop repeat="item section.get_items()">
-           <li><a href="${section.child_url(request, item)}">${item.title}</a></li>
+           <li><a href="${item.item_url(request)}">${item.title}</a></li>
         </tal:loop>
         </ul>
     </tal:loop>

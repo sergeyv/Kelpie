@@ -14,6 +14,8 @@
 <body>
 
 <div class="main_content">
+
+(model view)
 <ul>
 <h1>${context.pretty_name} ${context}</h1>
 

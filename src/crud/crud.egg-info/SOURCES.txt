@@ -7,6 +7,9 @@ crud.egg-info/PKG-INFO
 crud.egg-info/SOURCES.txt
 crud.egg-info/dependency_links.txt
 crud.egg-info/entry_points.txt
+crud.egg-info/requires.txt
 crud.egg-info/top_level.txt
 crud.egg-info/zip-safe
+crud/tests/__init__.py
+crud/tests/test_url.py
 crud/views/__init__.py

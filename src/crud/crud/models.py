@@ -31,13 +31,13 @@ class Traversable(object):
     A base class which implements stuff needed
     for 'traversability'
     """
-    __name__ = ''
-    __parent__ = None
+    #__name__ = ''
+    #__parent__ = None
     subsections = {}
     subitems_source = None
     views = []
 
-    def url(self, request, view_method=None):
+    def item_url(self, request, view_method=None):
         print "getting url for %s" % self
         print "    parent is %s" % self.__parent__
         print "    name is %s" % self.__name__
@@ -139,6 +139,8 @@ class Section(Traversable):
     views = ('add','save','delete')
 
     def __init__(self, title, subitems_source=None, subsections = {}):
+        self.__name__ = None
+        self.__parent__ = None
         self.title = title
         self.subitems_source = subitems_source
         self.subsections = subsections

@@ -13,7 +13,6 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 requires = [
     'repoze.bfg',
     'SQLAlchemy',
-    'FormAlchemy',
     'transaction',
     'repoze.tm2',
     'zope.sqlalchemy',
