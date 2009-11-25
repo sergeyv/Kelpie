@@ -17,7 +17,7 @@
 
 <h1>Add </h1>
 
-<form method="post" action="save">
+<form method="post" action="save_new">
 <tal:from replace="structure form" />
 
 <input type="submit" name="form.button.submit" value="Save" />

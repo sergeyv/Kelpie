@@ -8,20 +8,22 @@ from crud.models import DBSession
 
 from crud import IModel, ISection, ModelProxy
 
+from crud.views.theme import Theme
+
 def index(context,request):
     # context is a Section object here
-    dbsession = DBSession()
+    theme = Theme(context, request)
     
-    instances = context.get_items()
     return render('templates/index.pt',
                   context=context,
-                  instances = instances,
                   request = request,
+                  theme = theme,
                  )
                                        
 def view(context, request):
     #context is ModelProxy here
-    dbsession = DBSession()
+    theme = Theme(context, request)
+
     fs = FieldSet(context.model)
     include = []
     # render context's fiels using FA
@@ -34,6 +36,7 @@ def view(context, request):
                    context = context,
                    form = fs.render(),
                    request = request,
+                   theme = theme,
                   )
 
 def edit(context, request):
@@ -48,8 +51,7 @@ def edit(context, request):
 def add(context, request):
     # context is Section here
     dbsession = DBSession()
-    item_class = context.get_subitems_class()
-    instance =  item_class()
+    instance = context.create_subitem()
     fs = FieldSet(instance, session=dbsession)
     return render('templates/add.pt',
                   instance = instance,
@@ -64,28 +66,31 @@ def save(context, request):
 
     if 'form.button.cancel' in request.params:
         return HTTPFound(location=success_url)
-    existing = IModel.providedBy(context)
-    if existing:
-        instance = context.model
-    else:
-        item_class = context.get_subitems_class()
-        instance =  item_class()
+    instance = context.model
     dbsession = DBSession()
     fs = FieldSet(instance, session=dbsession)
     fs.rebind(instance, data=request.params)
     if fs.validate(): fs.sync()
-    if not existing:
-        dbsession.add(instance)
-    #instance.save()
     return HTTPFound(location=success_url)
 
+def save_new(context, request):
+    success_url = request.path_url.rpartition('/')[0]+ '/'
+    failure_url = request.path_url.rpartition('/')[0] + '/edit'
+
+    if 'form.button.cancel' in request.params:
+        return HTTPFound(location=success_url)
+    instance =  context.create_subitem()
+    dbsession = DBSession()
+    fs = FieldSet(instance, session=dbsession)
+    fs.rebind(instance, data=request.params)
+    if fs.validate(): 
+        fs.sync()
+        dbsession.add(instance)
+        return HTTPFound(location=success_url)
+    return HTTPFound(location=failure_url)
     
 def delete(context, request):
-    my_section = traversal.find_interface(context, ISection)
-    if my_section:
-        success_url = my_section.url(request)
-    else:
-        success_url = request.application_url
+    success_url = context.parent_url(request)
         
     if 'form.button.cancel' in request.params:
         return HTTPFound(location=success_url)

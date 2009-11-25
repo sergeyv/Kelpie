@@ -11,15 +11,13 @@ from sqlalchemy.exc import IntegrityError
 
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm import relation
+from sqlalchemy.orm import relation, backref
 
 from sqlalchemy.ext.declarative import declarative_base
 
 from zope.interface import implements
 
 from zope.sqlalchemy import ZopeTransactionExtension
-
-from crud import IModel
 
 import crud
 
@@ -84,7 +82,18 @@ class Project(Base):
     def __repr__(self):
         return self.name
 
-    
+# Self-referential test
+
+class Folder(Base):
+    __tablename__ = 'folders'
+    id = Column(Integer, primary_key = True)
+    name = Column(String(100))
+    parent_id = Column(Integer, ForeignKey('folders.id')) 
+    subfolders = relation('Folder')#, backref=backref('parent', remote_side=['folders.c.id']))
+
+    def __repr__(self):
+        return self.name
+
 # Register our classes with crud
 class ServerProxy(crud.ModelProxy):
     pretty_name = 'Server'
@@ -121,13 +130,43 @@ about_section = crud.Section(
     }
 )
 
+about_section.show_in_breadcrumbs = False
+
+class FolderProxy(crud.ModelProxy):
+    pretty_name = 'Folder',
+    subitems_source = 'subfolders'
+
+class RootFolderProxy(crud.ModelProxy):
+
+
+    subitems_source = 'subfolders'
+
+    def __init__(self):
+        self.__name__ = None
+        self.__parent__ = None
+        
+    @property
+    def model(self):
+        return DBSession.query(Folder).filter(Folder.id==1).first()
+        
+    def with_parent(self, parent, name):
+        self.__name__ = name
+        self.__parent__ = parent
+        return self
+    
+        
+crud.register(Folder, FolderProxy)
+
+
+
 root = crud.Section(
     "Kelpie!",
     subsections = dict(
         zopes = crud.Section("All Zope Instances", ZopeInstance),
         servers = crud.Section("All Servers", Server),
         products = crud.Section("All Products", ZopeProduct),
-        about = about_section 
+        about = about_section, 
+        folders = RootFolderProxy(),
         )
 )
 
@@ -137,6 +176,8 @@ def initialize_sql(db, echo=False):
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
     Base.metadata.create_all(engine)    
+    #root = RootFolderProxy()
+    print "GOT ROOT: %s" % root
     crud.crud_init(DBSession, root)
 
 

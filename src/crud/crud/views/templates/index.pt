@@ -1,26 +1,33 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html
-    xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:tal="http://xml.zope.org/namespaces/tal">
+<html xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:metal="http://xml.zope.org/namespaces/metal" 
+     metal:use-macro="theme.layout.macros['master']">
 
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <title>${context.title}</title>
         <link rel="stylesheet" type="text/css"
-          href="${request.application_url}/static/style.css" />
+          href="${request.application_url}/static/default.css" />
 </head>
 
 <body>
 
-<div class="main_content">
+<metal:main fill-slot="main">
 
 (section view)
+
+<div id="breadcrumbs">
+<tal:loop repeat="bc context.breadcrumbs(request)">
+<a href="${bc.url}">${bc.title}</a><tal:sep condition="not repeat['bc'].end">&rarr;</tal:sep>
+</tal:loop>
+</div>
 
 <h1>${context.title}</h1>
 
 <table>
-<tr tal:repeat="instance instances">
+<tr tal:repeat="instance context.get_items()">
 <td><a href="${context.child_url(request, instance)}">${instance}</a></td>
 <td><a href="${context.child_url(request, instance, 'edit')}">Edit</a></td>
 <td><a href="${context.child_url(request, instance, 'delete')}">Delete</a></td>
@@ -29,6 +36,11 @@
 
 <p tal:condition="context.subitems_source"><a href="${context.item_url(request,'add')}">[Add]</a></p>
 
+<a href="${context.parent_url(request)}">Up one level</a>.
+
+</metal:main>
+
+<metal:sidebar fill-slot="sidebar">
 <p><strong>Sub-sections:</strong></p>
 <dl>
     <tal:loop repeat="section context.get_subsections()">
@@ -40,9 +52,7 @@
         </ul>
     </tal:loop>
 </dl>
-
-<a href="${context.parent_url(request)}">Up one level</a>.
-</div>
+</metal:sidebar>
 
 </body>
 </html>

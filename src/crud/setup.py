@@ -23,6 +23,7 @@ setup(name='crud',
         'SQLAlchemy',
         'FormAlchemy',
         'sprox',
+        #'repoze.bfg.formish',
       ],
       entry_points="""
       # -*- Entry points: -*-

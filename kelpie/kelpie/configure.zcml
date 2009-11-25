@@ -7,11 +7,16 @@
   
   <subscriber for="repoze.bfg.interfaces.INewRequest"
     handler=".run.handle_teardown"/>
-
+<!--
   <route
     path="/static/*subpath"
     name="static"
     view=".views.static.view"
     />
+-->
+<!--<view
+    for=".models.FolderProxy"
+    view=".views.home"
+/>-->
 
 </configure>
