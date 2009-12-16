@@ -105,12 +105,13 @@ crud.register(Server, ServerProxy)
 
 class ZopeInstanceProxy(crud.ModelProxy):
     pretty_name = 'Zope Instance',
-    slug_fn = lambda a: a.id,
-    title_fn = lambda a: a.name,
+
     subsections = {
         'products' : crud.Section('Products', 'products'),
         'buildouts' : crud.Section('Buildouts', 'buildout_instances'),
     }
+    
+    edit_form_options = {}
 
 crud.register(ZopeInstance, ZopeInstanceProxy)
 
@@ -170,6 +171,13 @@ root = crud.Section(
         )
 )
 
+from crud.forms import FormishSAReflector
+
+reflector = FormishSAReflector()
+
+form = reflector.reflect(ZopeInstance)
+
+print "Got form: %s" % (form,)
     
 def initialize_sql(db, echo=False):
     engine = create_engine(db, echo=echo)

@@ -14,18 +14,14 @@
 
 <body>
 
-<metal:main fill-slot="main">
-
-(model view)
-
-<div id="breadcrumbs">
-<tal:loop repeat="bc context.breadcrumbs(request)">
-<a href="${bc.url}">${bc.title}</a><tal:sep condition="not repeat['bc'].end">&rarr;</tal:sep>
-</tal:loop>
-</div>
-
+<metal:header fill-slot="header">
 <h1>${context.title}</h1>
+</metal:header>
 
+<metal:main fill-slot="main">
+<a href="${context.item_url(request)}">View</a>
+<a href="${context.item_url(request)}/edit">Edit</a>
+<a href="${context.item_url(request)}/contents">Contents</a>
 <tal:from replace="structure form" />
 
 <tal:subitems condition="context.can_have_subitems()">

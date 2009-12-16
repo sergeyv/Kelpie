@@ -14,17 +14,12 @@
 
 <body>
 
-<metal:main fill-slot="main">
-
-(section view)
-
-<div id="breadcrumbs">
-<tal:loop repeat="bc context.breadcrumbs(request)">
-<a href="${bc.url}">${bc.title}</a><tal:sep condition="not repeat['bc'].end">&rarr;</tal:sep>
-</tal:loop>
-</div>
-
+<metal:header fill-slot="header">
 <h1>${context.title}</h1>
+</metal:header>
+
+
+<metal:main fill-slot="main">
 
 <table>
 <tr tal:repeat="instance context.get_items()">

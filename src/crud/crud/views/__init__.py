@@ -41,10 +41,20 @@ def view(context, request):
 
 def edit(context, request):
     # context is ModelProxy here
-    fs = FieldSet(context.model)
+    #fs = FieldSet(context.model)
+    import schemaish
+    import formish
+    schema = schemaish.Structure()
+    schema.add('title', schemaish.String())
+    form = formish.Form(schema, 'form')
+    form.addAction(save, 'Save')
+    form.addAction(add, 'Cancel')
+
+    #form['title'].widget = formish.Input(strip=True)
+    form['title'].default = "Hello!"
     return render('templates/edit.pt',
                   context = context,
-                  form = fs.render(),
+                  form = form(), #fs.render(),
                   request = request,
                  )
 

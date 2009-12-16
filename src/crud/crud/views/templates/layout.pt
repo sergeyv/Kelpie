@@ -13,28 +13,42 @@
 <body>
 <!-- start header -->
 <div id="logo">
-  <h2><code>Kelpie</code>, a <code>repoze.bfg</code> application</h2>
+  <h2><strong>C.R.U.D.</strong> &mdash; automatic admin for <code>repoze.bfg</code></h2>
 </div>
-<div id="header">
+<div class="visualClear">&nbsp;</div>
+<!--<div id="header">
   <div id="menu">
   </div>
-</div>
+</div>-->
+
 <!-- end header -->
 <div id="wrapper">
   <!-- start page -->
   <div id="page">
-    <!-- start content -->
-    <div id="content">
-
-     <metal:body define-slot="main">...</metal:body>
-    </div>
-    <!-- end content -->
+  
     <!-- start sidebar -->
     <div id="sidebar">
      <metal:body define-slot="sidebar">...</metal:body>
     </div>
     <!-- end sidebar -->
-    <div style="clear: both;">&nbsp;</div>
+
+    <div id="breadcrumbs"
+         tal:define="breadcrumbs context.breadcrumbs(request)"
+         tal:condition="len(breadcrumbs) > 1">
+        You are here:
+        <tal:loop repeat="bc context.breadcrumbs(request)">
+            <a href="${bc.url}">${bc.title}</a><tal:sep condition="not repeat['bc'].end">&rarr;</tal:sep>
+        </tal:loop>
+    </div>
+
+    <div id="header">
+     <metal:header define-slot="header">...</metal:header>
+    </div>
+    
+    <div id="content">
+     <metal:body define-slot="main">...</metal:body>
+    </div>
+    <div class="visualClear">&nbsp;</div>
   </div>
 </div>
 <!-- end page -->

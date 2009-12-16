@@ -13,3 +13,4 @@ crud.egg-info/zip-safe
 crud/tests/__init__.py
 crud/tests/test_url.py
 crud/views/__init__.py
+crud/views/theme.py

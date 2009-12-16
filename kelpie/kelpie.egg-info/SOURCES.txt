@@ -2,6 +2,7 @@ README.txt
 setup.cfg
 setup.py
 kelpie/__init__.py
+kelpie/models.py
 kelpie/run.py
 kelpie/tests.py
 kelpie.egg-info/PKG-INFO
@@ -12,9 +13,6 @@ kelpie.egg-info/not-zip-safe
 kelpie.egg-info/pkg-info
 kelpie.egg-info/requires.txt
 kelpie.egg-info/top_level.txt
-kelpie/models/__init__.py
 kelpie/views/__init__.py
 kelpie/views/home.py
-kelpie/views/server.py
 kelpie/views/static.py
-kelpie/views/zope_instances.py
