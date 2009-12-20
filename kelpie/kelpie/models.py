@@ -177,7 +177,7 @@ reflector = FormishSAReflector()
 
 form = reflector.reflect(ZopeInstance)
 
-print "Got form: %s" % (form,)
+print "Got form: %s" % (form())
     
 def initialize_sql(db, echo=False):
     engine = create_engine(db, echo=echo)

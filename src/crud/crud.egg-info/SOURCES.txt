@@ -1,6 +1,7 @@
 setup.cfg
 setup.py
 crud/__init__.py
+crud/forms.py
 crud/models.py
 crud/registry.py
 crud.egg-info/PKG-INFO

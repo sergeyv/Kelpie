@@ -41,32 +41,36 @@ def view(context, request):
 
 def edit(context, request):
     # context is ModelProxy here
+    theme = Theme(context, request)
     #fs = FieldSet(context.model)
     import schemaish
     import formish
     schema = schemaish.Structure()
     schema.add('title', schemaish.String())
     form = formish.Form(schema, 'form')
-    form.addAction(save, 'Save')
-    form.addAction(add, 'Cancel')
+    #form.addAction(save, 'Save')
+    #form.addAction(add, 'Cancel')
 
     #form['title'].widget = formish.Input(strip=True)
     form['title'].default = "Hello!"
     return render('templates/edit.pt',
                   context = context,
+                  theme=theme,
                   form = form(), #fs.render(),
                   request = request,
                  )
 
 def add(context, request):
     # context is Section here
+    theme = Theme(context, request)
     dbsession = DBSession()
     instance = context.create_subitem()
     fs = FieldSet(instance, session=dbsession)
     return render('templates/add.pt',
                   instance = instance,
-                  context = context,
+                  theme = theme,
                   form = fs.render(),
+                  context = context,
                   request = request,
                  )
 
@@ -101,6 +105,7 @@ def save_new(context, request):
     
 def delete(context, request):
     success_url = context.parent_url(request)
+    theme = Theme(context, request)
         
     if 'form.button.cancel' in request.params:
         return HTTPFound(location=success_url)
@@ -110,6 +115,8 @@ def delete(context, request):
         return HTTPFound(location=success_url)
     return render('templates/delete.pt',
                   instance = context.model,
+                  context = context,
                   request = request,
+                  theme=theme,
                  )
 
