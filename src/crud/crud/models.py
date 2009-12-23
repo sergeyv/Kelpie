@@ -96,9 +96,10 @@ class Traversable(object):
                 .filter(self.subitems_source.id==name).first()
         if model is None:
             raise KeyError       
-        proxy_class = get_proxy_for_model(model.__class__)
-        print "Proxy for %s is %s" % (model.__class__, proxy_class) 
-        return proxy_class(name=name, parent=self, model=model)
+        #proxy_class = get_proxy_for_model(model.__class__)
+        #print "Proxy for %s is %s" % (model.__class__, proxy_class) 
+        #return proxy_class(name=name, parent=self, model=model)
+        return self.wrap_child(model=model, name=name)
 
     def get_subsections(self):
         return [s.with_parent(self,n) for (n,s) in self.subsections.items()]
@@ -170,7 +171,13 @@ class Traversable(object):
             q = DBSession.query(self.subitems_source)
         result = q.all() 
         # wrap them in the location-aware proxy
-        result = [ModelProxy(name=str(obj.id), parent=self, model=obj) for obj in result]
+        
+        if len(result):
+            sample = result[0]
+            #proxy_class = get_proxy_for_model(model.__class__)  
+            #result = [proxy_class(name=str(obj.id), parent=self, model=obj) for obj in result]
+            result = [self.wrap_child(model=model, name=str(model.id)) for model in result]
+            
         return result
 
     def breadcrumbs(self, request):
@@ -192,12 +199,22 @@ class Traversable(object):
         crumbs.reverse()
         return crumbs
     
+    def wrap_child(self, model, name):
+        """
+        Wrap a model in a correct subsclass of ModelProxy
+        and return it as a subitem
+        """        
+        proxy_class = get_proxy_for_model(model.__class__)  
+        return proxy_class(name=name, parent=self, model=model)
+
 class ModelProxy(Traversable):
     implements(IModel)
 
     pretty_name = 'Model'
 
     views = ('add', 'edit', 'save', 'delete', 'save_new')
+    
+    form_factory = None
     
     def __init__(self, name, parent, model):
         self.__name__ = name
@@ -213,7 +230,7 @@ class ModelProxy(Traversable):
                     getattr(self.model, 'name',
                     "%s %s" % (self.pretty_name, self.model.id)))
 
-        
+                
 class Section(Traversable):
     implements(ISection)
 

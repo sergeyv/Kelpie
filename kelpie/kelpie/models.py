@@ -20,10 +20,13 @@ from zope.interface import implements
 from zope.sqlalchemy import ZopeTransactionExtension
 
 import crud
+from crud.forms.fa import FormAlchemyFormFactory
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
+# Set the form factory for allinstances of ModelProxy
+crud.ModelProxy.form_factory = FormAlchemyFormFactory()
 
 class Server(Base):
     __tablename__ = 'servers'
@@ -171,13 +174,10 @@ root = crud.Section(
         )
 )
 
-from crud.forms import FormishSAReflector
-
-reflector = FormishSAReflector()
-
-form = reflector.reflect(ZopeInstance)
-
-print "Got form: %s" % (form())
+#from crud.forms import FormishSAReflector
+#reflector = FormishSAReflector()
+#form = reflector.reflect(ZopeInstance)
+#print "Got form: %s" % (form())
     
 def initialize_sql(db, echo=False):
     engine = create_engine(db, echo=echo)

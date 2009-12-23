@@ -24,17 +24,9 @@ def view(context, request):
     #context is ModelProxy here
     theme = Theme(context, request)
 
-    fs = FieldSet(context.model)
-    include = []
-    # render context's fiels using FA
-    # TODO: there's a way to set this on the form itself
-    # rather than on individual fields
-    for (k, field) in fs.render_fields.items():
-        include.append(field.readonly())
-    fs.configure(include=include)
     return render('templates/view.pt',
                    context = context,
-                   form = fs.render(),
+                   form = context.form_factory.readonly_form(context),
                    request = request,
                    theme = theme,
                   )
@@ -56,7 +48,7 @@ def edit(context, request):
     return render('templates/edit.pt',
                   context = context,
                   theme=theme,
-                  form = form(), #fs.render(),
+                  form = context.form_factory.edit_form(context),
                   request = request,
                  )
 
@@ -65,11 +57,14 @@ def add(context, request):
     theme = Theme(context, request)
     dbsession = DBSession()
     instance = context.create_subitem()
-    fs = FieldSet(instance, session=dbsession)
+    proxy = context.wrap_child(name=None, model=instance)
+    #fs = FieldSet(instance, session=dbsession)
+    form = proxy.form_factory.add_form(context,dbsession)
+    
     return render('templates/add.pt',
                   instance = instance,
                   theme = theme,
-                  form = fs.render(),
+                  form = form,
                   context = context,
                   request = request,
                  )
@@ -78,14 +73,16 @@ def save(context, request):
     success_url = request.path_url.rpartition('/')[0]+ '/'
     failure_url = request.path_url.rpartition('/')[0] + '/edit'
 
+    instance = context.model
+
     if 'form.button.cancel' in request.params:
         return HTTPFound(location=success_url)
-    instance = context.model
+
     dbsession = DBSession()
-    fs = FieldSet(instance, session=dbsession)
-    fs.rebind(instance, data=request.params)
-    if fs.validate(): fs.sync()
-    return HTTPFound(location=success_url)
+    success = context.form_factory.save(model = instance, data=request.params, session=dbsession)
+    if success:
+        return HTTPFound(location=success_url)
+    return HTTPFound(location=failure_url)
 
 def save_new(context, request):
     success_url = request.path_url.rpartition('/')[0]+ '/'
@@ -93,12 +90,15 @@ def save_new(context, request):
 
     if 'form.button.cancel' in request.params:
         return HTTPFound(location=success_url)
-    instance =  context.create_subitem()
+    instance = context.create_subitem()
+    proxy = context.wrap_child(name=None, model=instance)
     dbsession = DBSession()
-    fs = FieldSet(instance, session=dbsession)
-    fs.rebind(instance, data=request.params)
-    if fs.validate(): 
-        fs.sync()
+    #fs = FieldSet(instance, session=dbsession)
+    #fs.rebind(instance, data=request.params)
+    #if fs.validate(): 
+    #    fs.sync()
+    success = proxy.form_factory.save(model=instance, data=request.params, session=dbsession)
+    if success:
         dbsession.add(instance)
         return HTTPFound(location=success_url)
     return HTTPFound(location=failure_url)
